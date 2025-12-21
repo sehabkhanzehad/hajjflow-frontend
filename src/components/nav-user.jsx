@@ -10,6 +10,10 @@ import {
 } from "lucide-react"
 
 import { useNavigate } from "react-router-dom"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthContext"
+import api from "@/lib/api"
 
 import {
   Avatar,
@@ -37,13 +41,23 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
+  const { logout } = useAuth()
+
+  const signOutMutation = useMutation({
+    mutationFn: () => api.post('/auth/sign-out'),
+    onSuccess: () => {
+      logout()
+      navigate('/')
+    },
+    onError: (error) => {
+      toast.error('Sign out failed, but logging out locally')
+      logout()
+      navigate('/')
+    },
+  })
 
   const handleSignOut = () => {
-    localStorage.removeItem('accessToken')
-    localStorage.removeItem('user')
-    sessionStorage.removeItem('accessToken')
-    sessionStorage.removeItem('user')
-    navigate('/')
+    signOutMutation.mutate()
   }
 
   return (
@@ -56,7 +70,7 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{user.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -74,7 +88,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{user.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>

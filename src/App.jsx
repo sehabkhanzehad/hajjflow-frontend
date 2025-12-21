@@ -1,19 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useAuth } from './contexts/AuthContext'
 import Home from '@/pages/Home'
 import Dashboard from '@/pages/Dashboard'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-    setIsAuthenticated(!!token);
-  }, []);
-
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>; // or a spinner
-  }
+  const { isAuthenticated } = useAuth();
 
   return (
     <Router>

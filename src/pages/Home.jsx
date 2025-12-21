@@ -1,41 +1,81 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const signIn = async ({ email, password, remember }) => {
-    const response = await api.post("/auth/sign-in", {
-        email,
-        password,
-        remember,
-    });
+const signInSchema = z.object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(1, "Password is required"),
+    remember: z.boolean(),
+});
+
+const signIn = async (data) => {
+    const response = await api.post("/auth/sign-in", data);
     return response.data;
 };
 
 export default function Home() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [remember, setRemember] = useState(false);
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+        remember: false,
+    });
+    const [errors, setErrors] = useState({});
+    const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const mutation = useMutation({
         mutationFn: signIn,
         onSuccess: (data) => {
-            const storage = remember ? localStorage : sessionStorage;
-            storage.setItem("accessToken", data.accessToken);
-            storage.setItem("user", JSON.stringify(data.user));
+            login(data.data.accessToken, data.data.user, formData.remember);
             navigate("/dashboard");
         },
         onError: (error) => {
-            console.error("Sign in error:", error);
+            const message = error?.response?.data?.message || "Sign in failed";
+            toast.error(message);
+            setSubmitted(false);
+        },
+        onSettled: () => {
+            setSubmitted(false);
         },
     });
 
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+        // Clear field error on change
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: undefined }));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate({ email, password, remember });
+        if (submitted || mutation.isPending) return;
+        setErrors({});
+        setSubmitted(true);
+
+        const result = signInSchema.safeParse(formData);
+        if (!result.success) {
+            const fieldErrors = {};
+            result.error.errors.forEach(err => {
+                fieldErrors[err.path[0]] = err.message;
+            });
+            setErrors(fieldErrors);
+            setSubmitted(false);
+            return;
+        }
+
+        mutation.mutate(formData);
     };
 
     return (
@@ -54,12 +94,15 @@ export default function Home() {
                         </label>
                         <Input
                             id="email"
+                            name="email"
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="mt-1"
+                            value={formData.email}
+                            onChange={handleChange}
+                            className={errors.email ? "border-red-500" : ""}
                         />
+                        {errors.email && (
+                            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                        )}
                     </div>
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
@@ -67,31 +110,30 @@ export default function Home() {
                         </label>
                         <Input
                             id="password"
+                            name="password"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="mt-1"
+                            value={formData.password}
+                            onChange={handleChange}
+                            className={errors.password ? "border-red-500" : ""}
                         />
+                        {errors.password && (
+                            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                        )}
                     </div>
                     <div className="flex items-center">
                         <input
                             id="remember"
+                            name="remember"
                             type="checkbox"
-                            checked={remember}
-                            onChange={(e) => setRemember(e.target.checked)}
+                            checked={formData.remember}
+                            onChange={handleChange}
                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                         />
                         <label htmlFor="remember" className="ml-2 block text-sm text-gray-900">
                             Remember me
                         </label>
                     </div>
-                    {mutation.isError && (
-                        <div className="text-red-600 text-sm">
-                            {mutation.error?.response?.data?.message || "Sign in failed"}
-                        </div>
-                    )}
-                    <Button type="submit" disabled={mutation.isPending} className="w-full">
+                    <Button type="submit" disabled={mutation.isPending || submitted} className="w-full">
                         {mutation.isPending ? "Signing in..." : "Sign In"}
                     </Button>
                 </form>

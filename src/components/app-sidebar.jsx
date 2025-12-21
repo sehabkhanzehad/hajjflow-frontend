@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
+import { useAuth } from "@/contexts/AuthContext"
 import {
   AudioWaveform,
   BookOpen,
@@ -173,19 +174,13 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
-  const [user, setUser] = useState({ name: "User", email: "user@example.com", avatar: "" });
+  const { user } = useAuth();
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser({
-        name: parsedUser.attributes.name,
-        email: parsedUser.attributes.email,
-        avatar: "",
-      });
-    }
-  }, []);
+  const displayUser = {
+    name: user.attributes.name,
+    email: user.attributes.email,
+    avatar: "",
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -197,7 +192,7 @@ export function AppSidebar({
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser user={displayUser} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

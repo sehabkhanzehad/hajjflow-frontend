@@ -25,8 +25,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            // Token expired, clear storage and redirect
+        if (error.response?.status === 401 && !error.config.url.includes('/auth/sign-in')) {
+            // Token expired, clear storage and redirect (but not for sign-in)
             localStorage.removeItem('accessToken');
             localStorage.removeItem('user');
             sessionStorage.removeItem('accessToken');
