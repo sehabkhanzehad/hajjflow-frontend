@@ -23,7 +23,7 @@ import {
 import { NavMain } from '@/components/nav-main'
 import { NavProjects } from '@/components/nav-projects'
 import { NavUser } from '@/components/nav-user'
-import { TeamSwitcher } from '@/components/team-switcher'
+import { Logo } from '@/components/nav-logo'
 import {
   Sidebar,
   SidebarContent,
@@ -34,23 +34,6 @@ import {
 
 // This is sample data.
 const data = {
-  teams: [
-    {
-      name: "Accounts Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Finance Corp.",
-      logo: AudioWaveform,
-      plan: "Business",
-    },
-    {
-      name: "Trading Ltd.",
-      logo: Command,
-      plan: "Pro",
-    },
-  ],
   navMain: [
     {
       title: "Dashboard",
@@ -308,15 +291,18 @@ export function AppSidebar({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <Logo />
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain items={navMain} />
         <NavProjects projects={projects} />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={displayUser} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
