@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { LanguageToggle } from "@/components/ui/language-toggle"
+import { useTranslation } from 'react-i18next'
 import {
     SidebarInset,
     SidebarProvider,
@@ -16,6 +18,8 @@ import {
 } from "@/components/ui/sidebar"
 
 export default function Dashboard() {
+    const { t } = useTranslation();
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -28,17 +32,18 @@ export default function Dashboard() {
                             <BreadcrumbList>
                                 <BreadcrumbItem className="hidden md:block">
                                     <BreadcrumbLink href="/">
-                                        Home
+                                        {t('app.home')}
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                                    <BreadcrumbPage>{t('app.dashboard')}</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
-                    <div className="ml-auto px-4">
+                    <div className="ml-auto px-4 flex items-center gap-2">
+                        <LanguageToggle />
                         <ThemeToggle />
                     </div>
                 </header>

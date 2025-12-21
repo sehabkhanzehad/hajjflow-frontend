@@ -12,6 +12,7 @@ import {
 import { useNavigate } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslation } from 'react-i18next'
 import { useAuth } from "@/contexts/AuthContext"
 import api from "@/lib/api"
 
@@ -42,6 +43,7 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
   const { logout } = useAuth()
+  const { t } = useTranslation()
 
   const signOutMutation = useMutation({
     mutationFn: () => api.post('/auth/sign-out'),
@@ -50,7 +52,7 @@ export function NavUser({
       navigate('/')
     },
     onError: (error) => {
-      toast.error('Sign out failed, but logging out locally')
+      toast.error(t('app.signOutFailed'))
       logout()
       navigate('/')
     },

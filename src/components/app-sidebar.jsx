@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
+import { useTranslation } from 'react-i18next'
 import {
   AudioWaveform,
   BookOpen,
@@ -175,6 +176,7 @@ export function AppSidebar({
   ...props
 }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const displayUser = {
     name: user.attributes.name,
@@ -182,14 +184,135 @@ export function AppSidebar({
     avatar: "",
   };
 
+  const navMain = [
+    {
+      title: t('app.dashboard'),
+      url: "/dashboard",
+      icon: LayoutDashboard,
+      isActive: true,
+      items: [
+        {
+          title: t('app.overview'),
+          url: "/dashboard",
+        },
+        {
+          title: t('app.analytics'),
+          url: "/dashboard/analytics",
+        },
+        {
+          title: t('app.reports'),
+          url: "/dashboard/reports",
+        },
+      ],
+    },
+    {
+      title: t('app.accounts'),
+      url: "/accounts",
+      icon: Wallet,
+      items: [
+        {
+          title: t('app.allAccounts'),
+          url: "/accounts",
+        },
+        {
+          title: t('app.transactions'),
+          url: "/accounts/transactions",
+        },
+        {
+          title: t('app.reconciliation'),
+          url: "/accounts/reconciliation",
+        },
+      ],
+    },
+    {
+      title: t('app.invoices'),
+      url: "/invoices",
+      icon: Receipt,
+      items: [
+        {
+          title: t('app.allInvoices'),
+          url: "/invoices",
+        },
+        {
+          title: t('app.createInvoice'),
+          url: "/invoices/create",
+        },
+        {
+          title: t('app.drafts'),
+          url: "/invoices/drafts",
+        },
+      ],
+    },
+    {
+      title: t('app.payments'),
+      url: "/payments",
+      icon: CreditCard,
+      items: [
+        {
+          title: t('app.allPayments'),
+          url: "/payments",
+        },
+        {
+          title: t('app.pending'),
+          url: "/payments/pending",
+        },
+        {
+          title: t('app.history'),
+          url: "/payments/history",
+        },
+      ],
+    },
+    {
+      title: t('app.settings'),
+      url: "/settings",
+      icon: Settings2,
+      items: [
+        {
+          title: t('app.general'),
+          url: "/settings",
+        },
+        {
+          title: t('app.team'),
+          url: "/settings/team",
+        },
+        {
+          title: t('app.billing'),
+          url: "/settings/billing",
+        },
+        {
+          title: t('app.integrations'),
+          url: "/settings/integrations",
+        },
+      ],
+    },
+  ];
+
+  const projects = [
+    {
+      name: t('app.companyAccounts'),
+      url: "/projects/company",
+      icon: Frame,
+    },
+    {
+      name: t('app.taxPlanning'),
+      url: "/projects/tax",
+      icon: PieChart,
+    },
+    {
+      name: t('app.budget2025'),
+      url: "/projects/budget",
+      icon: Map,
+    },
+  ];
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={navMain} />
+        <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={displayUser} />

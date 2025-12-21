@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ export default function Home() {
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
+    const { t } = useTranslation();
 
     const mutation = useMutation({
         mutationFn: signIn,
@@ -37,7 +39,7 @@ export default function Home() {
             navigate("/dashboard");
         },
         onError: (error) => {
-            const message = error?.response?.data?.message || "Sign in failed";
+            const message = error?.response?.data?.message || t('app.signInFailed');
             toast.error(message);
             setSubmitted(false);
         },
@@ -82,15 +84,15 @@ export default function Home() {
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
             <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-lg shadow-md">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold">Sign In</h1>
+                    <h1 className="text-3xl font-bold">{t('app.title')}</h1>
                     <p className="text-muted-foreground mt-2">
-                        Welcome back to Accounts
+                        {t('app.welcome')}
                     </p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            Email
+                            {t('app.email')}
                         </label>
                         <Input
                             id="email"
@@ -106,7 +108,7 @@ export default function Home() {
                     </div>
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            Password
+                            {t('app.password')}
                         </label>
                         <Input
                             id="password"
@@ -130,11 +132,11 @@ export default function Home() {
                             className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
                         />
                         <label htmlFor="remember" className="ml-2 block text-sm text-gray-900">
-                            Remember me
+                            {t('app.rememberMe')}
                         </label>
                     </div>
                     <Button type="submit" disabled={mutation.isPending || submitted} className="w-full">
-                        {mutation.isPending ? "Signing in..." : "Sign In"}
+                        {mutation.isPending ? t('app.signingIn') : t('app.signIn')}
                     </Button>
                 </form>
             </div>
