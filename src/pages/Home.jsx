@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AuthLayout from "@/Layouts/AuthLayout/AuthLayout";
 
 const signInSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -81,7 +82,7 @@ export default function Home() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <AuthLayout>
             <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-lg shadow-md">
                 <div className="text-center">
                     <h1 className="text-3xl font-bold">{t('app.title')}</h1>
@@ -140,6 +141,6 @@ export default function Home() {
                     </Button>
                 </form>
             </div>
-        </div>
+        </AuthLayout>
     );
 }

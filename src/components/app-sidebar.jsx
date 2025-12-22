@@ -114,24 +114,20 @@ const data = {
     },
     {
       title: "Settings",
-      url: "/settings",
+      url: "/dashboard/settings/account",
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "/settings",
+          title: "Account",
+          url: "/dashboard/settings/account",
         },
         {
-          title: "Team",
-          url: "/settings/team",
+          title: "Password",
+          url: "/dashboard/settings/password",
         },
         {
-          title: "Billing",
-          url: "/settings/billing",
-        },
-        {
-          title: "Integrations",
-          url: "/settings/integrations",
+          title: "Years",
+          url: "/dashboard/settings/years",
         },
       ],
     },
@@ -247,24 +243,24 @@ export function AppSidebar({
     },
     {
       title: t('app.settings'),
-      url: "/settings",
+      url: "/settings/profile",
       icon: Settings2,
       items: [
         {
-          title: t('app.general'),
-          url: "/settings",
+          title: t('app.profile'),
+          url: "/settings/profile",
         },
         {
-          title: t('app.team'),
-          url: "/settings/team",
+          title: t('app.password'),
+          url: "/settings/password",
         },
         {
-          title: t('app.billing'),
-          url: "/settings/billing",
+          title: t('app.yearsManagement'),
+          url: "/settings/years",
         },
         {
-          title: t('app.integrations'),
-          url: "/settings/integrations",
+          title: t('app.appearance'),
+          url: "/settings/appearance",
         },
       ],
     },
