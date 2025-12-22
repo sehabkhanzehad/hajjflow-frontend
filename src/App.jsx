@@ -1,21 +1,37 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './contexts/AuthContext'
+import { useTranslation } from 'react-i18next'
 import Home from '@/pages/Home'
 import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
+import Banks from '@/pages/Banks/Banks'
 
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+
+  // Show loading screen while checking authentication
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
-        <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <div className={language === 'bn' ? 'font-bengali' : ''}>
+      <Router>
+        <Routes>
+          <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+          <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
+          <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
+          <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </div>
   )
 }
 

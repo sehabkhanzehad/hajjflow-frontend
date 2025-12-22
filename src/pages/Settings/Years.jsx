@@ -2,13 +2,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
+import api from '@/lib/api'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Calendar, CalendarPlus } from 'lucide-react'
+import { Calendar, CalendarPlus, Edit } from 'lucide-react'
 
 export default function YearsSettings() {
     const { t } = useTranslation()
@@ -23,13 +25,13 @@ export default function YearsSettings() {
     const { data: years, isLoading } = useQuery({
         queryKey: ['years'],
         queryFn: async () => {
-            const response = await axios.get('/api/years')
+            const response = await api.get('/years')
             return response.data
         },
     })
 
     const createMutation = useMutation({
-        mutationFn: async (data) => await axios.post('/api/years', data),
+        mutationFn: async (data) => await api.post('/years', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['years'] })
             toast.success(t('app.yearCreated'))
@@ -46,7 +48,7 @@ export default function YearsSettings() {
     })
 
     const updateMutation = useMutation({
-        mutationFn: async ({ id, data }) => await axios.put(`/api/years/${id}`, data),
+        mutationFn: async ({ id, data }) => await api.put(`/years/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['years'] })
             toast.success(t('app.yearUpdated'))
@@ -92,10 +94,21 @@ export default function YearsSettings() {
 
     const handleEdit = (year) => {
         setEditingYear(year)
-        setYearName(year.name)
-        setStartDate(year.start_date)
-        setEndDate(year.end_date)
-        setStatus(year.status)
+        setYearName(year.attributes.name || '')
+        
+        // Parse and format dates properly for input[type="date"]
+        const formatDateForInput = (dateString) => {
+            if (!dateString) return ''
+            // Handle various date formats
+            const date = new Date(dateString)
+            if (isNaN(date.getTime())) return ''
+            // Return in YYYY-MM-DD format
+            return date.toISOString().split('T')[0]
+        }
+        
+        setStartDate(formatDateForInput(year.attributes.startDate))
+        setEndDate(formatDateForInput(year.attributes.endDate))
+        setStatus(year.attributes.status ?? true)
         setIsDialogOpen(true)
     }
 
@@ -242,33 +255,50 @@ export default function YearsSettings() {
                         </Button>
                     </div>
                 ) : (
-                    <div className="space-y-3">
-                        {yearsList.map((year) => (
-                            <div key={year.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors">
-                                <div className="flex items-center space-x-3">
-                                    <div className="shrink-0">
-                                        <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
-                                            <Calendar className="w-5 h-5" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm font-medium">{year.name}</p>
-                                        {year.created_at && (
-                                            <p className="text-xs text-muted-foreground">
-                                                {new Date(year.created_at).toLocaleDateString()}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleEdit(year)}
-                                >
-                                    {t('app.edit')}
-                                </Button>
-                            </div>
-                        ))}
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>{t('app.yearName')}</TableHead>
+                                    <TableHead>{t('app.startDate')}</TableHead>
+                                    <TableHead>{t('app.endDate')}</TableHead>
+                                    <TableHead>{t('app.status')}</TableHead>
+                                    <TableHead className="text-right">{t('app.actions')}</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {yearsList.map((year) => (
+                                    <TableRow key={year.id}>
+                                        <TableCell className="font-medium">
+                                            {year.attributes.name}
+                                        </TableCell>
+                                        <TableCell>
+                                            {year.attributes.startDate ? new Date(year.attributes.startDate).toLocaleDateString() : '-'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {year.attributes.endDate ? new Date(year.attributes.endDate).toLocaleDateString() : '-'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {year.attributes.status ? (
+                                                <Badge variant="default">{t('app.active')}</Badge>
+                                            ) : (
+                                                <Badge variant="secondary">{t('app.inactive')}</Badge>
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleEdit(year)}
+                                            >
+                                                <Edit className="w-4 h-4 mr-1" />
+                                                {t('app.edit')}
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     </div>
                 )}
             </CardContent>

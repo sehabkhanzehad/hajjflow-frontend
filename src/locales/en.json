@@ -1,5 +1,27 @@
 {
     "app": {
+        "sidebar": {
+            "section": {
+                "platform": "Platform",
+                "management": "Management",
+                "accounts": "Accounts"
+            },
+            "menu": {
+                "pilgrims": "Pilgrims",
+                "sections": "Sections"
+            },
+            "options": {
+                "groupLeader": "Group Leader",
+                "allPilgrim": "All Pilgrim",
+                "preRegistration": "Pre Registration",
+                "registration": "Registration",
+                "banks": "Banks",
+                "groupLeaders": "Group Leaders",
+                "employees": "Employees",
+                "bills": "Bills",
+                "others": "Others"
+            }
+        },
         "title": "Accounts",
         "welcome": "Welcome back to Accounts",
         "dashboard": "Dashboard",

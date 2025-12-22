@@ -4,6 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-geist: 'Geist';
+  --font-hind-siliguri: 'Hind Siliguri';
+  --font-sans: var(--font-geist), sans-serif;
+  --font-bengali: var(--font-hind-siliguri), sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -46,6 +50,7 @@
 
 :root {
   --radius: 0.625rem;
+  font-family: var(--font-sans);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -116,8 +121,15 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: var(--font-sans);
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Bengali font support */
+.font-bengali,
+.font-bengali * {
+  font-family: var(--font-bengali) !important;
 }

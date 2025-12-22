@@ -8,18 +8,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import AuthLayout from "@/Layouts/AuthLayout/AuthLayout";
 
+// Zod validation schema
 const signInSchema = z.object({
-    email: z.string().email("Invalid email address"),
+    email: z.string().min(1, "Email is required").email("Invalid email address"),
     password: z.string().min(1, "Password is required"),
-    remember: z.boolean(),
+    remember: z.boolean().default(false),
 });
-
-const signIn = async (data) => {
-    const response = await api.post("/auth/sign-in", data);
-    return response.data;
-};
 
 export default function Home() {
     const [formData, setFormData] = useState({
@@ -28,24 +27,27 @@ export default function Home() {
         remember: false,
     });
     const [errors, setErrors] = useState({});
-    const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
     const { t } = useTranslation();
 
+    // TanStack Query mutation for sign in
     const mutation = useMutation({
-        mutationFn: signIn,
-        onSuccess: (data) => {
-            login(data.data.accessToken, data.data.user, formData.remember);
+        mutationFn: async (data) => {
+            const response = await api.post("/auth/sign-in", data);
+            return response.data;
+        },
+        onSuccess: (response) => {
+            console.log('Sign in success:', response);
+            const { accessToken, user } = response.data;
+            login(accessToken, user, formData.remember);
+            toast.success(response.message || t('app.signInSuccess'));
             navigate("/dashboard");
         },
         onError: (error) => {
+            console.error('Sign in error:', error);
             const message = error?.response?.data?.message || t('app.signInFailed');
             toast.error(message);
-            setSubmitted(false);
-        },
-        onSettled: () => {
-            setSubmitted(false);
         },
     });
 
@@ -63,84 +65,99 @@ export default function Home() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (submitted || mutation.isPending) return;
         setErrors({});
-        setSubmitted(true);
 
+        // Zod validation
         const result = signInSchema.safeParse(formData);
+
         if (!result.success) {
             const fieldErrors = {};
-            result.error.errors.forEach(err => {
-                fieldErrors[err.path[0]] = err.message;
-            });
+            // Safely handle Zod errors
+            if (result.error?.issues) {
+                result.error.issues.forEach(issue => {
+                    const fieldName = issue.path[0];
+                    if (fieldName) {
+                        fieldErrors[fieldName] = issue.message;
+                    }
+                });
+            }
             setErrors(fieldErrors);
-            setSubmitted(false);
             return;
         }
 
-        mutation.mutate(formData);
+        // Submit with TanStack Query
+        mutation.mutate(result.data);
     };
 
     return (
         <AuthLayout>
-            <div className="w-full max-w-md space-y-8 p-8 bg-white rounded-lg shadow-md">
-                <div className="text-center">
-                    <h1 className="text-3xl font-bold">{t('app.title')}</h1>
-                    <p className="text-muted-foreground mt-2">
+            <Card className="w-full border-border/50 shadow-xl backdrop-blur-sm">
+                <CardHeader className="space-y-1">
+                    <CardTitle className="text-2xl font-bold text-center">
+                        {t('app.signIn')}
+                    </CardTitle>
+                    <CardDescription className="text-center">
                         {t('app.welcome')}
-                    </p>
-                </div>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            {t('app.email')}
-                        </label>
-                        <Input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className={errors.email ? "border-red-500" : ""}
-                        />
-                        {errors.email && (
-                            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-                        )}
-                    </div>
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t('app.password')}
-                        </label>
-                        <Input
-                            id="password"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className={errors.password ? "border-red-500" : ""}
-                        />
-                        {errors.password && (
-                            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                        )}
-                    </div>
-                    <div className="flex items-center">
-                        <input
-                            id="remember"
-                            name="remember"
-                            type="checkbox"
-                            checked={formData.remember}
-                            onChange={handleChange}
-                            className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                        />
-                        <label htmlFor="remember" className="ml-2 block text-sm text-gray-900">
-                            {t('app.rememberMe')}
-                        </label>
-                    </div>
-                    <Button type="submit" disabled={mutation.isPending || submitted} className="w-full">
-                        {mutation.isPending ? t('app.signingIn') : t('app.signIn')}
-                    </Button>
-                </form>
-            </div>
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="email">{t('app.email')}</Label>
+                            <Input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="example@rajtravels.com"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className={errors.email ? "border-destructive" : ""}
+                            />
+                            {errors.email && (
+                                <p className="text-destructive text-sm">{errors.email}</p>
+                            )}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">{t('app.password')}</Label>
+                            <Input
+                                id="password"
+                                name="password"
+                                type="password"
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={handleChange}
+                                className={errors.password ? "border-destructive" : ""}
+                            />
+                            {errors.password && (
+                                <p className="text-destructive text-sm">{errors.password}</p>
+                            )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                id="remember"
+                                checked={formData.remember}
+                                onCheckedChange={(checked) =>
+                                    setFormData(prev => ({ ...prev, remember: checked }))
+                                }
+                            />
+                            <Label
+                                htmlFor="remember"
+                                className="text-sm font-normal cursor-pointer"
+                            >
+                                {t('app.rememberMe')}
+                            </Label>
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={mutation.isPending}
+                            className="w-full cursor-pointer"
+                            size="lg"
+                        >
+                            {mutation.isPending ? t('app.signingIn') : t('app.signIn')}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
         </AuthLayout>
     );
 }

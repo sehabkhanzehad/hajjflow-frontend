@@ -6,17 +6,23 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-        if (token) {
-            setIsAuthenticated(true);
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
+        const checkAuth = () => {
+            const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+            const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+            if (token) {
+                setIsAuthenticated(true);
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
+                }
             }
-        }
+            setIsLoading(false);
+        };
+
+        checkAuth();
     }, []);
 
     const login = (token, userData, remember) => {
@@ -37,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, isLoading, user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
