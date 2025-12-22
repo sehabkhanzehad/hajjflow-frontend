@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
-import { GroupLeaderTable } from './components/GroupLeaderTable'
-import { GroupLeaderForm } from './components/GroupLeaderForm'
+import { EmployeeTable } from './components/EmployeeTable'
+import { EmployeeForm } from './components/EmployeeForm'
 import AppPagination from '@/components/app/AppPagination'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
@@ -14,20 +14,20 @@ import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, Users } from 'lucide-react'
 
-export default function GroupLeaders() {
+export default function Employees() {
     const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [editingGroupLeader, setEditingGroupLeader] = useState(null)
+    const [editingEmployee, setEditingEmployee] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
-    const [groupLeaderToDelete, setGroupLeaderToDelete] = useState(null)
+    const [employeeToDelete, setEmployeeToDelete] = useState(null)
 
     const { data, isLoading } = useQuery({
-        queryKey: ['group-leaders', currentPage, rowsPerPage],
+        queryKey: ['employees', currentPage, rowsPerPage],
         queryFn: async () => {
-            const response = await api.get('/sections/group-leaders', {
+            const response = await api.get('/sections/employees', {
                 params: {
                     page: currentPage,
                     per_page: rowsPerPage,
@@ -37,32 +37,32 @@ export default function GroupLeaders() {
         }
     })
 
-    const groupLeaders = data?.data
+    const employees = data?.data
     const meta = data?.meta
 
     const createMutation = useMutation({
-        mutationFn: (data) => api.post('/sections/group-leaders', data),
+        mutationFn: (data) => api.post('/sections/employees', data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader created successfully')
+            queryClient.invalidateQueries({ queryKey: ['employees'] })
+            toast.success('Employee created successfully')
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create group leader')
+            toast.error(error.response?.data?.message || 'Failed to create employee')
         }
     })
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => api.put(`/sections/group-leaders/${id}`, data),
+        mutationFn: ({ id, data }) => api.put(`/sections/employees/${id}`, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader updated successfully')
+            queryClient.invalidateQueries({ queryKey: ['employees'] })
+            toast.success('Employee updated successfully')
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update group leader')
+            toast.error(error.response?.data?.message || 'Failed to update employee')
         }
     })
 
@@ -70,19 +70,19 @@ export default function GroupLeaders() {
         mutationFn: (id) => api.delete(`/sections/${id}`),
         onSuccess: () => {
             setOpenDeleteDialog(false)
-            setGroupLeaderToDelete(null)
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader deleted successfully')
+            setEmployeeToDelete(null)
+            queryClient.invalidateQueries({ queryKey: ['employees'] })
+            toast.success('Employee deleted successfully')
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete group leader')
+            toast.error(error?.response?.data?.message || 'Failed to delete employee')
         }
     })
 
-    const handleSubmit = (formData, editingGroupLeader) => {
-        if (editingGroupLeader) {
+    const handleSubmit = (formData, editingEmployee) => {
+        if (editingEmployee) {
             updateMutation.mutate({
-                id: editingGroupLeader.id,
+                id: editingEmployee.id,
                 data: formData
             })
         } else {
@@ -90,18 +90,18 @@ export default function GroupLeaders() {
         }
     }
 
-    const handleEdit = (groupLeader) => {
-        setEditingGroupLeader(groupLeader)
+    const handleEdit = (employee) => {
+        setEditingEmployee(employee)
         setDialogOpen(true)
     }
 
-    const handleDelete = (groupLeader) => {
-        setGroupLeaderToDelete(groupLeader)
+    const handleDelete = (employee) => {
+        setEmployeeToDelete(employee)
         setOpenDeleteDialog(true)
     }
 
     const resetForm = () => {
-        setEditingGroupLeader(null)
+        setEditingEmployee(null)
     }
 
     const openCreateDialog = () => {
@@ -121,24 +121,24 @@ export default function GroupLeaders() {
                 },
                 {
                     type: 'page',
-                    text: t('app.sidebar.options.groupLeaders'),
+                    text: t('app.sidebar.options.employees'),
                 },
             ]}
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.groupLeaders')} description="Manage your group leader sections." />
+                    <PageHeading title={t('app.sidebar.options.employees')} description="Manage your employee sections." />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Group Leader
+                        Add Employee
                     </Button>
                 </div>
 
                 <div className="flex-1">
-                    {groupLeaders?.length === 0 && !isLoading ? (
+                    {employees?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No group leaders found"
-                            description="Add group leader sections to manage your pilgrim groups effectively."
-                            actionLabel="Add Group Leader"
+                            title="No employees found"
+                            description="Add employee sections to manage your staff effectively."
+                            actionLabel="Add Employee"
                             onAction={openCreateDialog}
                             icon={<Users />}
                         />
@@ -147,8 +147,8 @@ export default function GroupLeaders() {
                             {isLoading ? (
                                 <TableSkeletons />
                             ) : (
-                                <GroupLeaderTable
-                                    groupLeaders={groupLeaders}
+                                <EmployeeTable
+                                    employees={employees}
                                     onEdit={handleEdit}
                                     onDelete={handleDelete}
                                 />
@@ -167,24 +167,24 @@ export default function GroupLeaders() {
                 />
             </div>
 
-            {/* create/edit group leader dialog */}
-            <GroupLeaderForm
+            {/* create/edit employee dialog */}
+            <EmployeeForm
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                editingGroupLeader={editingGroupLeader}
+                editingEmployee={editingEmployee}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
             />
 
-            {/* delete group leader alert */}
+            {/* delete employee alert */}
             <AppDeleteAlert
                 open={openDeleteDialog}
                 setOpen={setOpenDeleteDialog}
-                deleteData={groupLeaderToDelete}
+                deleteData={employeeToDelete}
                 isPending={deleteMutation.isPending}
                 mutate={deleteMutation.mutate}
-                title="Delete group leader"
-                description={`Are you sure you want to delete the group leader ${groupLeaderToDelete?.attributes?.name}?`}
+                title="Delete employee"
+                description={`Are you sure you want to delete the employee ${employeeToDelete?.attributes?.name}?`}
             />
         </DashboardLayout>
     )

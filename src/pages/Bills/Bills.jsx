@@ -4,30 +4,30 @@ import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
-import { GroupLeaderTable } from './components/GroupLeaderTable'
-import { GroupLeaderForm } from './components/GroupLeaderForm'
+import { BillTable } from './components/BillTable'
+import { BillForm } from './components/BillForm'
 import AppPagination from '@/components/app/AppPagination'
 import { EmptyComponent } from '@/components/app/EmptyComponent'
 import TableSkeletons from '@/components/skeletons/TableSkeletons'
 import AppDeleteAlert from '@/components/app/AppDeleteAlert'
 import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Receipt } from 'lucide-react'
 
-export default function GroupLeaders() {
+export default function Bills() {
     const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [editingGroupLeader, setEditingGroupLeader] = useState(null)
+    const [editingBill, setEditingBill] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
-    const [groupLeaderToDelete, setGroupLeaderToDelete] = useState(null)
+    const [billToDelete, setBillToDelete] = useState(null)
 
     const { data, isLoading } = useQuery({
-        queryKey: ['group-leaders', currentPage, rowsPerPage],
+        queryKey: ['bills', currentPage, rowsPerPage],
         queryFn: async () => {
-            const response = await api.get('/sections/group-leaders', {
+            const response = await api.get('/sections/bills', {
                 params: {
                     page: currentPage,
                     per_page: rowsPerPage,
@@ -37,32 +37,32 @@ export default function GroupLeaders() {
         }
     })
 
-    const groupLeaders = data?.data
+    const bills = data?.data
     const meta = data?.meta
 
     const createMutation = useMutation({
-        mutationFn: (data) => api.post('/sections/group-leaders', data),
+        mutationFn: (data) => api.post('/sections/bills', data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader created successfully')
+            queryClient.invalidateQueries({ queryKey: ['bills'] })
+            toast.success('Bill created successfully')
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to create group leader')
+            toast.error(error.response?.data?.message || 'Failed to create bill')
         }
     })
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => api.put(`/sections/group-leaders/${id}`, data),
+        mutationFn: ({ id, data }) => api.put(`/sections/bills/${id}`, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader updated successfully')
+            queryClient.invalidateQueries({ queryKey: ['bills'] })
+            toast.success('Bill updated successfully')
             setDialogOpen(false)
             resetForm()
         },
         onError: (error) => {
-            toast.error(error.response?.data?.message || 'Failed to update group leader')
+            toast.error(error.response?.data?.message || 'Failed to update bill')
         }
     })
 
@@ -70,19 +70,19 @@ export default function GroupLeaders() {
         mutationFn: (id) => api.delete(`/sections/${id}`),
         onSuccess: () => {
             setOpenDeleteDialog(false)
-            setGroupLeaderToDelete(null)
-            queryClient.invalidateQueries({ queryKey: ['group-leaders'] })
-            toast.success('Group leader deleted successfully')
+            setBillToDelete(null)
+            queryClient.invalidateQueries({ queryKey: ['bills'] })
+            toast.success('Bill deleted successfully')
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || 'Failed to delete group leader')
+            toast.error(error?.response?.data?.message || 'Failed to delete bill')
         }
     })
 
-    const handleSubmit = (formData, editingGroupLeader) => {
-        if (editingGroupLeader) {
+    const handleSubmit = (formData, editingBill) => {
+        if (editingBill) {
             updateMutation.mutate({
-                id: editingGroupLeader.id,
+                id: editingBill.id,
                 data: formData
             })
         } else {
@@ -90,18 +90,18 @@ export default function GroupLeaders() {
         }
     }
 
-    const handleEdit = (groupLeader) => {
-        setEditingGroupLeader(groupLeader)
+    const handleEdit = (bill) => {
+        setEditingBill(bill)
         setDialogOpen(true)
     }
 
-    const handleDelete = (groupLeader) => {
-        setGroupLeaderToDelete(groupLeader)
+    const handleDelete = (bill) => {
+        setBillToDelete(bill)
         setOpenDeleteDialog(true)
     }
 
     const resetForm = () => {
-        setEditingGroupLeader(null)
+        setEditingBill(null)
     }
 
     const openCreateDialog = () => {
@@ -121,34 +121,34 @@ export default function GroupLeaders() {
                 },
                 {
                     type: 'page',
-                    text: t('app.sidebar.options.groupLeaders'),
+                    text: t('app.sidebar.options.bills'),
                 },
             ]}
         >
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
-                    <PageHeading title={t('app.sidebar.options.groupLeaders')} description="Manage your group leader sections." />
+                    <PageHeading title={t('app.sidebar.options.bills')} description="Manage your bill sections." />
                     <Button variant="outline" icon={<Plus />} onClick={openCreateDialog}>
-                        Add Group Leader
+                        Add Bill
                     </Button>
                 </div>
 
                 <div className="flex-1">
-                    {groupLeaders?.length === 0 && !isLoading ? (
+                    {bills?.length === 0 && !isLoading ? (
                         <EmptyComponent
-                            title="No group leaders found"
-                            description="Add group leader sections to manage your pilgrim groups effectively."
-                            actionLabel="Add Group Leader"
+                            title="No bills found"
+                            description="Add bill sections to manage your billing information effectively."
+                            actionLabel="Add Bill"
                             onAction={openCreateDialog}
-                            icon={<Users />}
+                            icon={<Receipt />}
                         />
                     ) : (
                         <>
                             {isLoading ? (
                                 <TableSkeletons />
                             ) : (
-                                <GroupLeaderTable
-                                    groupLeaders={groupLeaders}
+                                <BillTable
+                                    bills={bills}
                                     onEdit={handleEdit}
                                     onDelete={handleDelete}
                                 />
@@ -167,24 +167,24 @@ export default function GroupLeaders() {
                 />
             </div>
 
-            {/* create/edit group leader dialog */}
-            <GroupLeaderForm
+            {/* create/edit bill dialog */}
+            <BillForm
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                editingGroupLeader={editingGroupLeader}
+                editingBill={editingBill}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
             />
 
-            {/* delete group leader alert */}
+            {/* delete bill alert */}
             <AppDeleteAlert
                 open={openDeleteDialog}
                 setOpen={setOpenDeleteDialog}
-                deleteData={groupLeaderToDelete}
+                deleteData={billToDelete}
                 isPending={deleteMutation.isPending}
                 mutate={deleteMutation.mutate}
-                title="Delete group leader"
-                description={`Are you sure you want to delete the group leader ${groupLeaderToDelete?.attributes?.name}?`}
+                title="Delete bill"
+                description={`Are you sure you want to delete the bill ${billToDelete?.attributes?.name}?`}
             />
         </DashboardLayout>
     )

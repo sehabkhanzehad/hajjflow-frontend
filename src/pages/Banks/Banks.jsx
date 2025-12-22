@@ -71,7 +71,7 @@ export default function Banks() {
     })
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, data }) => api.put(`/sections/${id}`, data),
+        mutationFn: ({ id, data }) => api.put(`/sections/banks/${id}`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['banks'] })
             toast.success('Bank updated successfully')
@@ -98,7 +98,7 @@ export default function Banks() {
 
     const handleSubmit = () => {
         if (editingBank) {
-            updateMutation.mutate({ id: editingBank.id, data: { code: formData.code, name: formData.name, description: formData.description } })
+            updateMutation.mutate({ id: editingBank.id, data: formData })
         } else {
             createMutation.mutate(formData)
         }

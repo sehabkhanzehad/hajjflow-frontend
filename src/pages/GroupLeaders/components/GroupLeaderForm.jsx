@@ -44,7 +44,7 @@ const groupLeaderSchema = z.object({
     }),
 })
 
-export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, formData, onFormDataChange, onSubmit, isSubmitting, resetForm }) {
+export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, onSubmit, isSubmitting }) {
     const form = useForm({
         resolver: zodResolver(groupLeaderSchema),
         defaultValues: {
@@ -60,21 +60,57 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, formDa
         },
     })
 
-    // Update form when formData changes
+    // Reset form when dialog opens/closes or editing changes
     useEffect(() => {
-        if (open) {
-            form.reset(formData)
+        if (editingGroupLeader) {
+            // Editing existing - populate with data
+            form.reset({
+                code: editingGroupLeader.attributes.code,
+                description: editingGroupLeader.attributes.description || '',
+                group_name: editingGroupLeader.relationships?.groupLeader?.attributes?.groupName || '',
+                first_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.firstName || '',
+                last_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.lastName || '',
+                mother_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.motherName || '',
+                father_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.fatherName || '',
+                phone: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.phone || '',
+                gender: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.gender || '',
+            })
+        } else if (open) {
+            // Creating new - reset to empty
+            form.reset({
+                code: '',
+                description: '',
+                group_name: '',
+                first_name: '',
+                last_name: '',
+                mother_name: '',
+                father_name: '',
+                phone: '',
+                gender: '',
+            })
         }
-    }, [formData, open, form])
+    }, [editingGroupLeader, open, form])
 
     const handleSubmit = (data) => {
-        onFormDataChange(data)
-        onSubmit()
+        onSubmit(data, editingGroupLeader)
     }
 
     const handleOpenChange = (newOpen) => {
         if (!newOpen) {
-            resetForm()
+            form.reset()
+        } else if (newOpen && editingGroupLeader) {
+            // Populate form when opening for edit
+            form.reset({
+                code: editingGroupLeader.attributes.code,
+                description: editingGroupLeader.attributes.description || '',
+                group_name: editingGroupLeader.relationships?.groupLeader?.attributes?.groupName || '',
+                first_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.firstName || '',
+                last_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.lastName || '',
+                mother_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.motherName || '',
+                father_name: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.fatherName || '',
+                phone: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.phone || '',
+                gender: editingGroupLeader.relationships?.groupLeader?.relationships?.profile?.attributes?.gender || '',
+            })
         }
         onOpenChange(newOpen)
     }
@@ -142,7 +178,7 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, formDa
                                             <Textarea
                                                 placeholder="Enter description"
                                                 {...field}
-                                                className="min-h-[60px] resize-none"
+                                                className="min-h-15 resize-none"
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -246,9 +282,9 @@ export function GroupLeaderForm({ open, onOpenChange, editingGroupLeader, formDa
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Gender</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
-                                                    <SelectTrigger className="h-9">
+                                                    <SelectTrigger className="h-9 w-full">
                                                         <SelectValue placeholder="Select gender" />
                                                     </SelectTrigger>
                                                 </FormControl>

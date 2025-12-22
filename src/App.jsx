@@ -6,6 +6,8 @@ import Dashboard from '@/pages/Dashboard'
 import Settings from '@/pages/Settings'
 import Banks from '@/pages/Banks/Banks'
 import GroupLeaders from '@/pages/GroupLeaders/GroupLeaders'
+import Employees from '@/pages/Employees/Employees'
+import Bills from '@/pages/Bills/Bills'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -29,6 +31,8 @@ function App() {
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
           <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
           <Route path="/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
+          <Route path="/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
+          <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
