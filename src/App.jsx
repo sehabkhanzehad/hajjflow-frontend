@@ -11,6 +11,7 @@ import Bills from '@/pages/Bills/Bills'
 import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
 import Borrowings from '@/pages/Borrowings/Borrowings'
+import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,6 +40,7 @@ function App() {
           <Route path="/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />
           <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
           <Route path="/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
+          <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -8,25 +8,31 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 const AppDeleteAlert = ({ open, setOpen, deleteData, isPending, mutate, title, description }) => {
+  const handleOpenChange = (newOpen) => {
+    if (!isPending) {
+      setOpen(newOpen);
+    }
+  };
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <Button
             onClick={() => mutate(deleteData?.id)}
             disabled={isPending}
-            loading={isPending}
+            variant="destructive"
           >
             {isPending ? 'Deleting...' : 'Delete'}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

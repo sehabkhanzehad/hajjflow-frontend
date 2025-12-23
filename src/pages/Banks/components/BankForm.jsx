@@ -111,7 +111,7 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
     }, [editingBank, open, form])
 
     const handleSubmit = (data) => {
-        onSubmit(data, editingBank)
+        onSubmit(data)
     }
 
     const handleOpenChange = (newOpen) => {
@@ -259,10 +259,8 @@ export function BankForm({ open, onOpenChange, editingBank, onSubmit, isSubmitti
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
+                                                    <SelectItem value="current">Current</SelectItem>
                                                     <SelectItem value="savings">Savings</SelectItem>
-                                                    <SelectItem value="checking">Checking</SelectItem>
-                                                    <SelectItem value="business">Business</SelectItem>
-                                                    <SelectItem value="other">Other</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />

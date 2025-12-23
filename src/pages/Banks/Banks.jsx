@@ -23,23 +23,6 @@ export default function Banks() {
     const [rowsPerPage, setRowsPerPage] = useState(10)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [bankToDelete, setBankToDelete] = useState(null)
-    const [formData, setFormData] = useState({
-        code: '',
-        name: '',
-        description: '',
-        branch: '',
-        account_number: '',
-        account_holder_name: '',
-        address: '',
-        account_type: '',
-        routing_number: '',
-        swift_code: '',
-        opening_date: '',
-        phone: '',
-        telephone: '',
-        email: '',
-        website: ''
-    })
 
     const { data, isLoading } = useQuery({
         queryKey: ['banks', currentPage, rowsPerPage],
@@ -63,7 +46,6 @@ export default function Banks() {
             queryClient.invalidateQueries({ queryKey: ['banks'] })
             toast.success(t('app.sectionCreated', { section: t('app.sidebar.options.banks') }))
             setDialogOpen(false)
-            resetForm()
         },
         onError: (error) => {
             toast.error(error.response?.data?.message || t('app.failedToCreateSection', { section: t('app.sidebar.options.banks') }))
@@ -76,7 +58,6 @@ export default function Banks() {
             queryClient.invalidateQueries({ queryKey: ['banks'] })
             toast.success(t('app.sectionUpdated', { section: t('app.sidebar.options.banks') }))
             setDialogOpen(false)
-            resetForm()
         },
         onError: (error) => {
             toast.error(error.response?.data?.message || t('app.failedToUpdateSection', { section: t('app.sidebar.options.banks') }))
@@ -96,33 +77,16 @@ export default function Banks() {
         }
     })
 
-    const handleSubmit = () => {
+    const handleSubmit = (data) => {
         if (editingBank) {
-            updateMutation.mutate({ id: editingBank.id, data: formData })
+            updateMutation.mutate({ id: editingBank.id, data })
         } else {
-            createMutation.mutate(formData)
+            createMutation.mutate(data)
         }
     }
 
     const handleEdit = (bank) => {
         setEditingBank(bank)
-        setFormData({
-            code: bank.attributes.code,
-            name: bank.attributes.name,
-            description: bank.attributes.description || '',
-            branch: bank.relationships?.bank?.attributes?.branch || '',
-            account_number: bank.relationships?.bank?.attributes?.accountNumber || '',
-            account_holder_name: bank.relationships?.bank?.attributes?.accountHolderName || '',
-            address: bank.relationships?.bank?.attributes?.address || '',
-            account_type: bank.relationships?.bank?.attributes?.accountType || '',
-            routing_number: bank.relationships?.bank?.attributes?.routingNumber || '',
-            swift_code: bank.relationships?.bank?.attributes?.swiftCode || '',
-            opening_date: bank.relationships?.bank?.attributes?.openingDate || '',
-            phone: bank.relationships?.bank?.attributes?.phone || '',
-            telephone: bank.relationships?.bank?.attributes?.telephone || '',
-            email: bank.relationships?.bank?.attributes?.email || '',
-            website: bank.relationships?.bank?.attributes?.website || ''
-        })
         setDialogOpen(true)
     }
 
@@ -131,29 +95,8 @@ export default function Banks() {
         setOpenDeleteDialog(true)
     }
 
-    const resetForm = () => {
-        setFormData({
-            code: '',
-            name: '',
-            description: '',
-            branch: '',
-            account_number: '',
-            account_holder_name: '',
-            address: '',
-            account_type: '',
-            routing_number: '',
-            swift_code: '',
-            opening_date: '',
-            phone: '',
-            telephone: '',
-            email: '',
-            website: ''
-        })
-        setEditingBank(null)
-    }
-
     const openCreateDialog = () => {
-        resetForm()
+        setEditingBank(null)
         setDialogOpen(true)
     }
 
@@ -220,8 +163,6 @@ export default function Banks() {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 editingBank={editingBank}
-                formData={formData}
-                onFormDataChange={setFormData}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
             />

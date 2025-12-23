@@ -230,6 +230,19 @@
         "employeePurpose": "staff",
         "groupLeaderPurpose": "pilgrim groups",
         "billPurpose": "billing information",
-        "otherPurpose": "other data"
+        "otherPurpose": "other data",
+        "pre-registrations": {
+            "title": "Pre Registrations",
+            "description": "Manage pilgrim pre-registrations",
+            "add_new": "Add Pre Registration",
+            "empty": {
+                "title": "No pre-registrations found",
+                "description": "Add pre-registration records to track pilgrim applications."
+            },
+            "delete": {
+                "title": "Delete Pre Registration",
+                "description": "Are you sure you want to delete this pre-registration? This action cannot be undone."
+            }
+        }
     }
 }

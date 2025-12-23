@@ -268,21 +268,21 @@ export function AppSidebar({ ...props }) {
       url: "/pilgrims",
       icon: Users,
       items: [
-        {
-          title: t('app.sidebar.options.allPilgrim'),
-          url: "/dashboard/analytics",
-        },
+        // {
+        //   title: t('app.sidebar.options.allPilgrim'),
+        //   url: "/dashboard/analytics",
+        // },
         {
           title: t('app.sidebar.options.groupLeader'),
-          url: "/dashboard",
+          url: "/group-leaders",
         },
         {
           title: t('app.sidebar.options.preRegistration'),
-          url: "/dashboard/reports",
+          url: "/pre-registrations",
         },
         {
           title: t('app.sidebar.options.registration'),
-          url: "/dashboard/reports",
+          url: "/registrations",
         },
       ],
     },
