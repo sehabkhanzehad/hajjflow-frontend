@@ -19,7 +19,9 @@
                 "groupLeaders": "Group Leaders",
                 "employees": "Employees",
                 "bills": "Bills",
-                "others": "Others"
+                "others": "Others",
+                "lendings": "Lending & Collection",
+                "borrowings": "Borrowing & Repayment"
             }
         },
         "title": "Accounts",

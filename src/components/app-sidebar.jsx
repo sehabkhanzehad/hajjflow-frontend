@@ -396,6 +396,21 @@ export function AppSidebar({ ...props }) {
         },
       ],
     },
+    {
+      title: "Loans",
+      url: "/sections/lendings",
+      icon: CreditCard,
+      items: [
+        {
+          title: t('app.sidebar.options.lendings'),
+          url: "/sections/lendings",
+        },
+        {
+          title: t('app.sidebar.options.borrowings'),
+          url: "/sections/borrowings",
+        }
+      ],
+    },
   ];
 
   // const projects = [
