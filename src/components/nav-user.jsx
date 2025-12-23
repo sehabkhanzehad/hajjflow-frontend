@@ -52,7 +52,7 @@ export function NavUser({
       logout()
       navigate('/')
     },
-    onError: (error) => {
+    onError: () => {
       toast.error(t('app.signOutFailed'))
       logout()
       navigate('/')

@@ -8,14 +8,8 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { useEffect, useState } from 'react';
 
 const AppDeleteAlert = ({ open, setOpen, deleteData, isPending, mutate, title, description }) => {
-  const [deleteId, setDeleteId] = useState(null);
-
-  useEffect(() => {
-    setDeleteId(deleteData?.id);
-  }, [deleteData]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -27,7 +21,7 @@ const AppDeleteAlert = ({ open, setOpen, deleteData, isPending, mutate, title, d
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={() => mutate(deleteId)}
+            onClick={() => mutate(deleteData?.id)}
             disabled={isPending}
             loading={isPending}
           >
