@@ -14,6 +14,8 @@ import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
 import Borrowings from '@/pages/Borrowings/Borrowings'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
+import Registrations from '@/pages/Registrations/Registrations'
+import Umrah from '@/pages/Umrah/Umrah'
 import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
 
 function App() {
@@ -47,6 +49,8 @@ function App() {
           <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
           <Route path="/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
+          <Route path="/registrations" element={isAuthenticated ? <Registrations /> : <Navigate to="/" replace />} />
+          <Route path="/umrah" element={isAuthenticated ? <Umrah /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

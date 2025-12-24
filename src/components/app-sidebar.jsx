@@ -290,12 +290,12 @@ export function AppSidebar({ ...props }) {
     },
     {
       title: "Umrah",
-      url: "/umrah-pilgrims",
+      url: "/umrah",
       icon: GalleryVerticalEnd,
       items: [
         {
           title: "Pilgrims",
-          url: "/umrah-pilgrims",
+          url: "/umrah",
         },
         {
           title: "Packages",
