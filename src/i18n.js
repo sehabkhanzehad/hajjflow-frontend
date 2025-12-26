@@ -20,7 +20,7 @@ i18n
     .init({
         resources,
         lng: undefined, // Let it detect from localStorage
-        fallbackLng: 'bn',
+        fallbackLng: 'en',
         detection: {
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'],

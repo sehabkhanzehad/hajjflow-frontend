@@ -10,7 +10,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { LanguageToggle } from '@/components/ui/language-toggle';
+// import { LanguageToggle } from '@/components/ui/language-toggle';
 import { Button } from '@/components/ui/button';
 import CreateTransactionModal from '@/components/CreateTransactionModal';
 import { Link } from 'react-router-dom';
@@ -122,7 +122,7 @@ export default function DashboardLayout({ children, breadcrumbs }) {
                 <Button onClick={() => { console.log('Button clicked'); setIsModalOpen(true); }} variant="outline" size="sm">
                   Add Transaction
                 </Button>
-                <LanguageToggle />
+                {/* <LanguageToggle /> */}
                 <ThemeToggle />
               </div>
             </div>

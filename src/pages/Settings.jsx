@@ -3,7 +3,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { LanguageToggle } from "@/components/ui/language-toggle"
+// import { LanguageToggle } from "@/components/ui/language-toggle"
 import AccountSettings from "./Settings/Account"
 import PasswordSettings from "./Settings/Password"
 import YearsSettings from "./Settings/Years"
@@ -102,13 +102,13 @@ export default function Settings() {
                                             </div>
                                         </div>
                                         <Separator />
-                                        <div className="space-y-2">
+                                        {/* <div className="space-y-2">
                                             <h3 className="text-sm font-medium">{t('app.language')}</h3>
                                             <div className="flex items-center gap-2">
                                                 <LanguageToggle />
                                                 <span className="text-sm text-muted-foreground">{t('app.selectLanguage')}</span>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </CardContent>
                                 </Card>
                             } />
