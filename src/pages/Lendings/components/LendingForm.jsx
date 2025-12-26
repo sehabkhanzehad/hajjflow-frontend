@@ -50,7 +50,7 @@ const lendingSchema = z.object({
     path: ["first_name"],
 })
 
-export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSubmitting, users }) {
+export function LendingForm({ open, onOpenChange, onSubmit, isSubmitting, users }) {
 
     const form = useForm({
         resolver: zodResolver(lendingSchema),
@@ -67,26 +67,11 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
     })
 
     useEffect(() => {
-        if (editingLending) {
-            const user = editingLending.relationships?.loanable
-            form.reset({
-                selectedUser: user ? user.id.toString() : 'new',
-                amount: editingLending.attributes.amount.toString(),
-                date: editingLending.attributes.date,
-                description: editingLending.attributes.description || '',
-                first_name: user ? user.attributes.firstName : '',
-                last_name: user ? user.attributes.lastName : '',
-                email: user ? user.attributes.email : '',
-                phone: user ? user.attributes.phone : '',
-            })
-            // Ensure date is set explicitly
-            form.setValue('date', editingLending.attributes.date || '')
-            form.trigger('date')
-        } else {
+        if (open) {
             form.reset({
                 selectedUser: '',
                 amount: '',
-                date: '',
+                date: new Date().toISOString().split('T')[0], // Default to today
                 description: '',
                 first_name: '',
                 last_name: '',
@@ -94,7 +79,7 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
                 phone: '',
             })
         }
-    }, [editingLending, open, form])
+    }, [open, form])
 
     const handleSubmit = (data) => {
         // Transform data
@@ -111,7 +96,7 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
         } else {
             payload.user_id = parseInt(data.selectedUser)
         }
-        onSubmit(payload, editingLending)
+        onSubmit(payload)
     }
 
     const handleOpenChange = (newOpen) => {
@@ -125,9 +110,9 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                 <DialogHeader className="pb-4">
-                    <DialogTitle className="text-xl font-semibold">{editingLending ? 'Edit Lending' : 'Add Lending'}</DialogTitle>
+                    <DialogTitle className="text-xl font-semibold">Add Lending</DialogTitle>
                     <DialogDescription className="text-muted-foreground">
-                        {editingLending ? 'Update the lending details.' : 'Create a new lending record.'}
+                        Create a new lending record.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -141,7 +126,7 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Select User *</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value} disabled={!!editingLending}>
+                                        <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a user or create new" />
@@ -236,7 +221,7 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
                                         <FormItem>
                                             <FormLabel>Amount *</FormLabel>
                                             <FormControl>
-                                                <Input type="number" step="0.01" placeholder="Enter amount" {...field} disabled={!!editingLending} />
+                                                <Input type="number" step="0.01" placeholder="Enter amount" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -280,7 +265,7 @@ export function LendingForm({ open, onOpenChange, editingLending, onSubmit, isSu
                                 Cancel
                             </Button>
                             <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'Saving...' : (editingLending ? 'Update' : 'Create')}
+                                {isSubmitting ? 'Saving...' : 'Create'}
                             </Button>
                         </DialogFooter>
                     </form>

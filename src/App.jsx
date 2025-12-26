@@ -12,6 +12,7 @@ import Employees from '@/pages/Employees/Employees'
 import Bills from '@/pages/Bills/Bills'
 import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
+import LoanTransactions from '@/pages/Lendings/LoanTransactions'
 import Borrowings from '@/pages/Borrowings/Borrowings'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 import Registrations from '@/pages/Registrations/Registrations'
@@ -48,6 +49,7 @@ function App() {
           <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
           <Route path="/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />
           <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
+          <Route path="/sections/lendings/:id/transactions" element={isAuthenticated ? <LoanTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/registrations" element={isAuthenticated ? <Registrations /> : <Navigate to="/" replace />} />
