@@ -13,9 +13,31 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { LanguageToggle } from '@/components/ui/language-toggle';
 import { Button } from '@/components/ui/button';
 import CreateTransactionModal from '@/components/CreateTransactionModal';
-import ErrorBoundary from '@/components/CreateTransactionModal';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error('Error caught by ErrorBoundary:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <div>An error occurred: {this.state.error?.message || 'Unknown error'}</div>;
+        }
+
+        return this.props.children;
+    }
+}
 
 export default function DashboardLayout({ children, breadcrumbs }) {
   const { t } = useTranslation();
@@ -109,7 +131,7 @@ export default function DashboardLayout({ children, breadcrumbs }) {
         </SidebarInset>
       </SidebarProvider>
       <ErrorBoundary>
-        <CreateTransactionModal isOpen={isModalOpen} onOpenChange={setIsModalOpen} />
+        <CreateTransactionModal open={isModalOpen} onOpenChange={setIsModalOpen} />
       </ErrorBoundary>
     </>
   );
