@@ -80,6 +80,7 @@
         "yearsManagement": "Years Management",
         "manageYears": "Manage academic years",
         "addYear": "Add Year",
+        "addTransaction": "Add Transaction",
         "editYear": "Edit Year",
         "yearName": "Year Name",
         "enterYearName": "Enter year name",

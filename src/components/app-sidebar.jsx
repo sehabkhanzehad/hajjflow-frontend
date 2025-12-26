@@ -409,6 +409,12 @@ export function AppSidebar({ ...props }) {
         }
       ],
     },
+    {
+      title: "Transactions",
+      url: "/transactions",
+      icon: Receipt,
+      items: [],
+    },
   ];
 
   // const projects = [

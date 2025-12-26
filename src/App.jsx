@@ -17,6 +17,7 @@ import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 import Registrations from '@/pages/Registrations/Registrations'
 import Umrah from '@/pages/Umrah/Umrah'
 import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
+import Transactions from '@/pages/Transactions/Transactions'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -51,6 +52,7 @@ function App() {
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/registrations" element={isAuthenticated ? <Registrations /> : <Navigate to="/" replace />} />
           <Route path="/umrah" element={isAuthenticated ? <Umrah /> : <Navigate to="/" replace />} />
+          <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
