@@ -49,6 +49,14 @@ export default function LoanTransactions() {
         }
     })
 
+    const { data: loanData } = useQuery({
+        queryKey: ['loan-details', id],
+        queryFn: async () => {
+            const response = await api.get(`/sections/loans/lendings/${id}`)
+            return response.data
+        }
+    })
+
     if (isLoading) {
         return (
             <DashboardLayout>
@@ -90,6 +98,63 @@ export default function LoanTransactions() {
         <DashboardLayout>
             <div className="flex flex-col h-full gap-4">
                 <div className="flex-1">
+                    {/* Loan Details Section */}
+                    {loanData && (
+                        <div className="bg-card border rounded-lg p-4 mb-6 shadow-sm">
+                            <div className="flex items-start justify-between">
+                                <div className="flex items-start space-x-3">
+                                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
+                                        <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-muted-foreground mb-1">Borrower Details:</p>
+                                        <h3 className="text-sm font-medium text-foreground">
+                                            {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground">
+                                            {loanData.data.relationships.loanable.attributes.email}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-6">
+                                    <div className="text-right">
+                                        <p className="text-xs text-muted-foreground">Loan Amount</p>
+                                        <p className="text-sm font-medium text-foreground">
+                                            ৳{Number(loanData.data.attributes.amount || 0).toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <p className="text-xs text-muted-foreground">Paid Amount</p>
+                                        <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                                            ৳{Number(loanData.data.attributes.paidAmount || 0).toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <p className="text-xs text-muted-foreground">Amount Due</p>
+                                        <p className="text-sm font-semibold text-foreground">
+                                            ৳{Number((loanData.data.attributes.amount || 0) - (loanData.data.attributes.paidAmount || 0)).toLocaleString()}
+                                        </p>
+                                    </div>
+
+                                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                        loanData.data.attributes.status === 'active'
+                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                            : loanData.data.attributes.status === 'completed'
+                                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                                    }`}>
+                                        {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {transactions.length === 0 ? (
                         <EmptyComponent
                             title="No transactions found"
