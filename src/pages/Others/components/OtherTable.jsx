@@ -15,14 +15,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
 
-export function OtherTable({ others, onEdit, onDelete }) {
+export function OtherTable({ others, onEdit, onDelete, onSeeTransactions }) {
     return (
         <Table>
             <TableHeader>
                 <TableRow>
                     <TableHead>Code</TableHead>
                     <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
+                    <TableHead>Last Update</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                 </TableRow>
             </TableHeader>
@@ -31,7 +31,7 @@ export function OtherTable({ others, onEdit, onDelete }) {
                     <TableRow key={other.id}>
                         <TableCell>{other.attributes.code}</TableCell>
                         <TableCell>{other.attributes.name}</TableCell>
-                        <TableCell>{other.attributes.description}</TableCell>
+                        <TableCell>{other.attributes.updatedAt ? new Date(other.attributes.updatedAt).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
                                 <DropdownMenu>
@@ -43,6 +43,10 @@ export function OtherTable({ others, onEdit, onDelete }) {
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => onEdit(other)}>
                                             Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => onSeeTransactions(other)}>
+                                            See Transactions
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem

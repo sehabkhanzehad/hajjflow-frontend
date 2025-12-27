@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -16,6 +17,7 @@ import { Plus, FileText } from 'lucide-react'
 
 export default function Others() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingOther, setEditingOther] = useState(null)
@@ -100,14 +102,16 @@ export default function Others() {
         setOpenDeleteDialog(true)
     }
 
+    const handleSeeTransactions = (other) => {
+        navigate(`/sections/others/${other.id}/transactions`)
+    }
+
     const resetForm = () => {
         setEditingOther(null)
     }
 
     const breadcrumbs = [
         { type: 'link', text: t('app.home'), href: '/' },
-        { type: 'separator' },
-        { type: 'link', text: t('app.sidebar.menu.sections'), href: '/sections/banks' },
         { type: 'separator' },
         { type: 'page', text: t('app.sidebar.options.others') },
     ]
@@ -119,7 +123,7 @@ export default function Others() {
                     <PageHeading title={t('app.sidebar.options.others')} description={t('app.manageSections', { section: t('app.sidebar.options.others') })} />
                     <Button onClick={() => setDialogOpen(true)} className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
-                        {t('app.addSection', { section: t('app.sidebar.options.others') })}
+                        Add
                     </Button>
                 </div>
 
@@ -131,7 +135,7 @@ export default function Others() {
                             icon={<FileText />}
                             title={t('app.noSectionsFound', { section: t('app.sidebar.options.others') })}
                             description={t('app.getStartedSections', { section: t('app.sidebar.options.others') })}
-                            actionLabel={t('app.addSection', { section: t('app.sidebar.options.others') })}
+                            actionLabel="Add"
                             onAction={() => setDialogOpen(true)}
                         />
                     ) : (
@@ -139,6 +143,7 @@ export default function Others() {
                             others={others}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onSeeTransactions={handleSeeTransactions}
                         />
                     )}
                 </div>
