@@ -22,7 +22,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { EllipsisVertical, Eye, X, FileText } from 'lucide-react'
+import { EllipsisVertical, X, FileText } from 'lucide-react'
 import {
     Dialog,
     DialogContent,
@@ -142,7 +142,9 @@ export default function OtherTransactions() {
                                         <TableHead>Title</TableHead>
                                         <TableHead>Voucher No</TableHead>
                                         <TableHead>Type</TableHead>
-                                        <TableHead className="text-right">Amount</TableHead>
+                                        <TableHead>Before Balance</TableHead>
+                                        <TableHead>Amount</TableHead>
+                                        <TableHead>After Balance</TableHead>
                                         <TableHead className="text-right">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -150,16 +152,22 @@ export default function OtherTransactions() {
                                     {transactions?.map((transaction) => (
                                         <TableRow key={transaction.id}>
                                             <TableCell>{transaction?.attributes?.date ? new Date(transaction.attributes.date).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
-                                            <TableCell>{transaction?.attributes?.title || 'N/A'}</TableCell>
+                                            <TableCell className="font-medium max-w-xs truncate" title={transaction?.attributes?.title || 'N/A'}>
+                                                {transaction?.attributes?.title || 'N/A'}
+                                            </TableCell>
                                             <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                             <TableCell>
-                                                <Badge variant={transaction?.attributes?.type === 'income' ? 'default' : 'destructive'}>
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                    transaction?.attributes?.type === 'income'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-red-100 text-red-800'
+                                                }`}>
                                                     {transaction?.attributes?.type === 'income' ? 'Deposit' : 'Expense'}
-                                                </Badge>
+                                                </span>
                                             </TableCell>
-                                            <TableCell className="text-right font-medium">
-                                                ৳{Number(transaction?.attributes?.amount || 0).toFixed(2)}
-                                            </TableCell>
+                                            <TableCell>৳{Number(transaction?.attributes?.beforeBalance || 0).toFixed(2)}</TableCell>
+                                            <TableCell className="font-medium">৳{Number(transaction?.attributes?.amount || 0).toFixed(2)}</TableCell>
+                                            <TableCell>৳{Number(transaction?.attributes?.afterBalance || 0).toFixed(2)}</TableCell>
                                             <TableCell className="text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
@@ -169,7 +177,6 @@ export default function OtherTransactions() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem onClick={() => handleViewTransaction(transaction)}>
-                                                            <Eye className="h-4 w-4 mr-2" />
                                                             View Details
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>

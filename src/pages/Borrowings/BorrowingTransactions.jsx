@@ -226,7 +226,6 @@ export default function BorrowingTransactions() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuItem onClick={() => handleViewTransaction(transaction)}>
-                                                            <Eye className="mr-2 h-4 w-4" />
                                                             View Details
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
