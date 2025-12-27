@@ -21,10 +21,9 @@ export function BankTable({ banks, onEdit, onDelete }) {
             <TableHeader>
                 <TableRow>
                     <TableHead>Code</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-center">Branch</TableHead>
-                    <TableHead className="text-center">Account Number</TableHead>
+                    <TableHead>Bank Details</TableHead>
+                    <TableHead>Account Details</TableHead>
+                    <TableHead>Open Date</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                 </TableRow>
             </TableHeader>
@@ -32,10 +31,46 @@ export function BankTable({ banks, onEdit, onDelete }) {
                 {banks?.map((bank) => (
                     <TableRow key={bank.id}>
                         <TableCell>{bank.attributes.code}</TableCell>
-                        <TableCell>{bank.attributes.name}</TableCell>
-                        <TableCell>{bank.attributes.description}</TableCell>
-                        <TableCell className="text-center">{bank.relationships?.bank?.attributes?.branch}</TableCell>
-                        <TableCell className="text-center">{bank.relationships?.bank?.attributes?.accountNumber}</TableCell>
+                        <TableCell>
+                            <div>
+                                <div className="font-semibold text-foreground">{bank.attributes.name}</div>
+                                <div className="text-sm text-muted-foreground">Branch: {bank.relationships?.bank?.attributes?.branch}</div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div>
+                                <div className="text-sm">A/C Name: {bank.relationships?.bank?.attributes?.accountHolderName}</div>
+                                <div className="text-sm">A/C No: {bank.relationships?.bank?.attributes?.accountNumber}</div>
+                            </div>
+                        </TableCell>
+                        <TableCell>
+                            <div>
+                                <div className="text-sm">
+                                    {bank.relationships?.bank?.attributes?.openingDate 
+                                        ? new Date(bank.relationships.bank.attributes.openingDate).toLocaleDateString('en-US', { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                          }) 
+                                        : 'N/A'}
+                                </div>
+                                <div className="mt-1">
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                        bank.relationships?.bank?.attributes?.status === true
+                                            ? 'bg-green-100 text-green-800'
+                                            : bank.relationships?.bank?.attributes?.status === false
+                                                ? 'bg-red-100 text-red-800'
+                                                : 'bg-muted text-muted-foreground'
+                                    }`}>
+                                        {bank.relationships?.bank?.attributes?.status === true
+                                            ? 'Active'
+                                            : bank.relationships?.bank?.attributes?.status === false
+                                                ? 'Inactive'
+                                                : 'Unknown'}
+                                    </span>
+                                </div>
+                            </div>
+                        </TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
                                 <DropdownMenu>
