@@ -14,6 +14,7 @@ import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
 import LoanTransactions from '@/pages/Lendings/LoanTransactions'
 import Borrowings from '@/pages/Borrowings/Borrowings'
+import BorrowingTransactions from '@/pages/Borrowings/BorrowingTransactions'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 import Registrations from '@/pages/Registrations/Registrations'
 import Umrah from '@/pages/Umrah/Umrah'
@@ -51,6 +52,7 @@ function App() {
           <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
           <Route path="/sections/lendings/:id/transactions" element={isAuthenticated ? <LoanTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
+          <Route path="/sections/borrowings/:id/transactions" element={isAuthenticated ? <BorrowingTransactions /> : <Navigate to="/" replace />} />
           <Route path="/pre-registrations" element={isAuthenticated ? <PreRegistrations /> : <Navigate to="/" replace />} />
           <Route path="/registrations" element={isAuthenticated ? <Registrations /> : <Navigate to="/" replace />} />
           <Route path="/umrah" element={isAuthenticated ? <Umrah /> : <Navigate to="/" replace />} />

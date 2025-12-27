@@ -10,32 +10,43 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
+import { useNavigate } from 'react-router-dom'
 
-export function BorrowingTable({ borrowings, onEdit, onDelete }) {
+export function BorrowingTable({ borrowings }) {
+    const navigate = useNavigate()
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>User Name</TableHead>
+                    <TableHead>User</TableHead>
                     <TableHead>Amount</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Description</TableHead>
+                    <TableHead>Paid</TableHead>
+                    <TableHead>Due</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Since</TableHead>
+                    <TableHead>Last Update</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {borrowings?.map((borrowing) => (
-                    <TableRow key={borrowing.id}>
+                    <TableRow key={borrowing?.id || Math.random()}>
                         <TableCell>
-                            {borrowing.relationships?.loanable?.attributes?.firstName} {borrowing.relationships?.loanable?.attributes?.lastName}
+                            {borrowing?.relationships?.loanable?.attributes?.firstName || 'Unknown'} {borrowing?.relationships?.loanable?.attributes?.lastName || ''}
                         </TableCell>
-                        <TableCell>{borrowing.attributes.amount}</TableCell>
-                        <TableCell>{borrowing.attributes.date}</TableCell>
-                        <TableCell>{borrowing.attributes.description}</TableCell>
+                        <TableCell>{borrowing?.attributes?.amount || 0}</TableCell>
+                        <TableCell>0</TableCell>
+                        <TableCell>{borrowing?.attributes?.amount || 0}</TableCell>
+                        <TableCell>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800`}>
+                                Unpaid
+                            </span>
+                        </TableCell>
+                        <TableCell>{borrowing?.attributes?.createdAt ? new Date(borrowing.attributes.createdAt).toLocaleDateString() : 'N/A'}</TableCell>
+                        <TableCell>{borrowing?.attributes?.updatedAt ? new Date(borrowing.attributes.updatedAt).toLocaleDateString() : 'N/A'}</TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
                                 <DropdownMenu>
@@ -45,15 +56,8 @@ export function BorrowingTable({ borrowings, onEdit, onDelete }) {
                                         </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => onEdit(borrowing)}>
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                            variant="destructive"
-                                            onClick={() => onDelete(borrowing)}
-                                        >
-                                            Delete
+                                        <DropdownMenuItem onClick={() => navigate(`/sections/borrowings/${borrowing?.id}/transactions`)}>
+                                            See Transactions
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>

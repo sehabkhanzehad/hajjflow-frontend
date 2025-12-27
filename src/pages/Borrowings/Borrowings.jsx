@@ -95,16 +95,6 @@ export default function Borrowings() {
         }
     }
 
-    const handleEdit = (borrowing) => {
-        setEditingBorrowing(borrowing)
-        setDialogOpen(true)
-    }
-
-    const handleDelete = (borrowing) => {
-        setBorrowingToDelete(borrowing)
-        setOpenDeleteDialog(true)
-    }
-
     const resetForm = () => {
         setEditingBorrowing(null)
     }
@@ -154,8 +144,6 @@ export default function Borrowings() {
                             ) : (
                                 <BorrowingTable
                                     borrowings={borrowings}
-                                    onEdit={handleEdit}
-                                    onDelete={handleDelete}
                                 />
                             )}
                         </>

@@ -32,7 +32,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
-export default function LoanTransactions() {
+export default function BorrowingTransactions() {
     const { id } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(15)
@@ -40,9 +40,9 @@ export default function LoanTransactions() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     const { data, isLoading } = useQuery({
-        queryKey: ['loan-transactions', id, currentPage, rowsPerPage],
+        queryKey: ['borrowing-transactions', id, currentPage, rowsPerPage],
         queryFn: async () => {
-            const response = await api.get(`/sections/loans/lendings/${id}/transactions`, {
+            const response = await api.get(`/sections/loans/borrowings/${id}/transactions`, {
                 params: {
                     page: currentPage,
                     per_page: rowsPerPage
@@ -52,10 +52,10 @@ export default function LoanTransactions() {
         }
     })
 
-    const { data: loanData } = useQuery({
-        queryKey: ['loan-details', id],
+    const { data: borrowingData } = useQuery({
+        queryKey: ['borrowing-details', id],
         queryFn: async () => {
-            const response = await api.get(`/sections/loans/lendings/${id}`)
+            const response = await api.get(`/sections/loans/borrowings/${id}`)
             return response.data
         }
     })
@@ -83,9 +83,9 @@ export default function LoanTransactions() {
         const previousBalance = index > 0 ? acc[index - 1].balance : 0
 
         let currentBalance = previousBalance
-        if (type === 'expense') {
+        if (type === 'income') {
             currentBalance += amount
-        } else if (type === 'income') {
+        } else if (type === 'expense') {
             currentBalance -= amount
         }
 
@@ -101,13 +101,13 @@ export default function LoanTransactions() {
         <DashboardLayout>
             <div className="flex flex-col h-full gap-4">
                 <PageHeading
-                    title="Loan Transactions"
-                    description="View and manage loan transactions and borrower details"
+                    title="Borrowing Transactions"
+                    description="View and manage borrowing transactions and lender details"
                 />
 
                 <div className="flex-1">
-                    {/* Loan Details Section */}
-                    {loanData && (
+                    {/* Borrowing Details Section */}
+                    {borrowingData && (
                         <div className="bg-card border rounded-lg p-4 mb-6 shadow-sm">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
@@ -120,42 +120,37 @@ export default function LoanTransactions() {
                                         <div className="flex items-center space-x-2 mb-0.5">
                                             <span className="text-xs font-medium text-muted-foreground">Borrower:</span>
                                             <span className="text-sm font-medium text-foreground">
-                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                                {borrowingData.data.relationships.loanable.attributes.firstName} {borrowingData.data.relationships.loanable.attributes.lastName || ''}
                                             </span>
-                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${loanData.data.attributes.status === 'active'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : loanData.data.attributes.status === 'completed'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
-                                                }`}>
-                                                {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
+                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800`}>
+                                                Unpaid
                                             </div>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
-                                            {loanData.data.relationships.loanable.attributes.email}
+                                            {borrowingData.data.relationships.loanable.attributes.email}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center space-x-6">
                                     <div className="text-right">
-                                        <p className="text-xs text-muted-foreground">Loan Amount</p>
+                                        <p className="text-xs text-muted-foreground">Borrowed Amount</p>
                                         <p className="text-sm font-medium text-foreground">
-                                            ৳{Number(loanData.data.attributes.amount || 0).toLocaleString()}
+                                            ৳{Number(borrowingData.data.attributes.amount || 0).toLocaleString()}
                                         </p>
                                     </div>
 
                                     <div className="text-right">
                                         <p className="text-xs text-muted-foreground">Paid Amount</p>
                                         <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                                            ৳{Number(loanData.data.attributes.paidAmount || 0).toLocaleString()}
+                                            ৳0
                                         </p>
                                     </div>
 
                                     <div className="text-right">
                                         <p className="text-xs text-muted-foreground">Amount Due</p>
                                         <p className="text-sm font-semibold text-foreground">
-                                            ৳{Number((loanData.data.attributes.amount || 0) - (loanData.data.attributes.paidAmount || 0)).toLocaleString()}
+                                            ৳{Number(borrowingData.data.attributes.amount || 0).toLocaleString()}
                                         </p>
                                     </div>
                                 </div>
@@ -166,7 +161,7 @@ export default function LoanTransactions() {
                     {transactions.length === 0 ? (
                         <EmptyComponent
                             title="No transactions found"
-                            description="This loan doesn't have any transactions yet."
+                            description="This borrowing doesn't have any transactions yet."
                         />
                     ) : (
                         <div className="rounded-md border">
@@ -246,7 +241,7 @@ export default function LoanTransactions() {
                         </DialogHeader>
 
                         <div className="space-y-4">
-                            {selectedTransaction && loanData && (
+                            {selectedTransaction && borrowingData && (
                                 <>
                                     {/* Transaction Type */}
                                     <div className="flex justify-center">
@@ -281,12 +276,12 @@ export default function LoanTransactions() {
                                         <div>
                                             <p className="text-sm text-muted-foreground">Borrower</p>
                                             <p className="text-sm font-medium">
-                                                {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
+                                                {borrowingData.data.relationships.loanable.attributes.firstName} {borrowingData.data.relationships.loanable.attributes.lastName || ''}
                                             </p>
                                         </div>
                                         <div className="ml-auto">
                                             <Badge variant="outline" className="text-xs">
-                                                {loanData.data.attributes.status}
+                                                Unpaid
                                             </Badge>
                                         </div>
                                     </div>
