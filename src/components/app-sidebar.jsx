@@ -369,7 +369,7 @@ export function AppSidebar({ ...props }) {
   const accounts = [
     {
       title: t('app.sidebar.menu.sections'),
-      url: "/sections/banks",
+      url: "/sections",
       icon: CreditCard,
       items: [
         {

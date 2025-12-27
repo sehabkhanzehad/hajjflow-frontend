@@ -15,14 +15,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
 
-export function BillTable({ bills, onEdit, onDelete }) {
+export function BillTable({ bills, onEdit, onDelete, onSeeTransactions }) {
     return (
         <Table>
             <TableHeader>
                 <TableRow>
                     <TableHead>Code</TableHead>
                     <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
                     <TableHead className="text-center">Bill Number</TableHead>
                     <TableHead className="text-center">Biller Name</TableHead>
                     <TableHead className="text-right">Action</TableHead>
@@ -33,7 +32,6 @@ export function BillTable({ bills, onEdit, onDelete }) {
                     <TableRow key={bill.id}>
                         <TableCell>{bill.attributes.code}</TableCell>
                         <TableCell>{bill.attributes.name}</TableCell>
-                        <TableCell>{bill.attributes.description}</TableCell>
                         <TableCell className="text-center">{bill.relationships?.bill?.attributes?.number}</TableCell>
                         <TableCell className="text-center">{bill.relationships?.bill?.attributes?.billerName}</TableCell>
                         <TableCell>
@@ -47,6 +45,10 @@ export function BillTable({ bills, onEdit, onDelete }) {
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem onClick={() => onEdit(bill)}>
                                             Edit
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem onClick={() => onSeeTransactions(bill)}>
+                                            See Transactions
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem

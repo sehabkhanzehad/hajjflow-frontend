@@ -11,6 +11,7 @@ import UmrahPackages from '@/pages/UmrahPackages/UmrahPackages'
 import Employees from '@/pages/Employees/Employees'
 import EmployeeTransactions from '@/pages/Employees/EmployeeTransactions'
 import Bills from '@/pages/Bills/Bills'
+import BillTransactions from '@/pages/Bills/BillTransactions'
 import Others from '@/pages/Others/Others'
 import Lendings from '@/pages/Lendings/Lendings'
 import LoanTransactions from '@/pages/Lendings/LoanTransactions'
@@ -52,6 +53,7 @@ function App() {
           <Route path="/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
           <Route path="/sections/employees/:id/transactions" element={isAuthenticated ? <EmployeeTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />
+          <Route path="/sections/bills/:id/transactions" element={isAuthenticated ? <BillTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/others" element={isAuthenticated ? <Others /> : <Navigate to="/" replace />} />
           <Route path="/sections/lendings" element={isAuthenticated ? <Lendings /> : <Navigate to="/" replace />} />
           <Route path="/sections/lendings/:id/transactions" element={isAuthenticated ? <LoanTransactions /> : <Navigate to="/" replace />} />
