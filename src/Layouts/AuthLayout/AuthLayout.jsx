@@ -2,7 +2,7 @@ const AuthLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:flex-1 items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-background p-12">
+      <div className="hidden lg:flex lg:flex-1 items-center justify-center bg-linear-to-br from-primary/10 via-primary/5 to-background p-12">
         <div className="max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10 backdrop-blur-sm shadow-lg">
             <svg
@@ -20,7 +20,7 @@ const AuthLayout = ({ children }) => {
             </svg>
           </div>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               M/S Raj Travel
             </h1>
             <p className="mt-3 text-lg text-muted-foreground">
