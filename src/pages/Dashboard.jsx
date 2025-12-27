@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
-import CreateTransactionModal from '@/components/CreateTransactionModal'
+import CreateTransactionModal from '@/pages/Transactions/components/CreateTransactionModal'
 
 export default function Dashboard() {
     const { t } = useTranslation();

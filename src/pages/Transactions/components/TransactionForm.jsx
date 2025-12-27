@@ -26,28 +26,41 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 
-const transactionSchema = z.object({
-    section_id: z.string().min(1, 'Section is required'),
-    type: z.enum(['income', 'expense']),
-    voucher_no: z.string().optional(),
-    title: z.string().min(1, 'Title is required'),
-    description: z.string().optional(),
-    amount: z.union([z.string(), z.number()]).refine((val) => {
-        const strVal = String(val || '').trim();
-        return strVal.length > 0 && !isNaN(Number(strVal)) && Number(strVal) > 0;
-    }, 'Amount must be a valid positive number'),
-    date: z.string().min(1, 'Date is required'),
-    loan_id: z.string().optional(),
-    pre_registration_ids: z.array(z.string()).optional(),
-    registration_ids: z.array(z.string()).optional(),
-});
+const createTransactionSchema = (selectedSection) => {
+    const baseSchema = {
+        section_id: z.string().min(1, 'Section is required'),
+        type: z.enum(['income', 'expense']),
+        voucher_no: z.string().optional(),
+        title: z.string().min(1, 'Title is required'),
+        description: z.string().optional(),
+        amount: z.union([z.string(), z.number()]).refine((val) => {
+            const strVal = String(val || '').trim();
+            return strVal.length > 0 && !isNaN(Number(strVal)) && Number(strVal) > 0;
+        }, 'Amount must be a valid positive number'),
+        date: z.string().min(1, 'Date is required'),
+        loan_id: z.string().optional(),
+        pre_registration_id: z.string().optional(),
+        pre_registration_ids: z.array(z.string()).optional(),
+        registration_ids: z.array(z.string()).optional(),
+    };
+
+    // Add conditional validation for group leader sections
+    if (selectedSection?.attributes?.type === 'group_leader') {
+        const pilgrimRequired = selectedSection.relationships?.groupLeader?.attributes?.pilgrimRequired;
+        if (pilgrimRequired) {
+            baseSchema.pre_registration_id = z.string().min(1, 'Pre-registration is required for this group leader section');
+        }
+    }
+
+    return z.object(baseSchema);
+};
 
 export default function TransactionForm({ onSuccess }) {
     const queryClient = useQueryClient();
     const [selectedSection, setSelectedSection] = useState(null);
 
     const form = useForm({
-        resolver: zodResolver(transactionSchema),
+        resolver: zodResolver(createTransactionSchema(selectedSection)),
         defaultValues: {
             section_id: '',
             type: 'income',
@@ -57,6 +70,7 @@ export default function TransactionForm({ onSuccess }) {
             amount: '',
             date: new Date().toISOString().split('T')[0],
             loan_id: '',
+            pre_registration_id: '',
             pre_registration_ids: [],
             registration_ids: [],
         },
@@ -112,7 +126,7 @@ export default function TransactionForm({ onSuccess }) {
         if (watchedSectionId && sections) {
             const section = sections.find(s => s.id.toString() === watchedSectionId);
             setSelectedSection(section);
-            form.clearErrors(['loan_id', 'pre_registration_ids', 'registration_ids']);
+            form.clearErrors(['loan_id', 'pre_registration_id', 'pre_registration_ids', 'registration_ids']);
             if (section && (section.attributes.type === 'lend' || section.attributes.type === 'borrow')) {
                 const requiredType = section.attributes.type === 'lend' ? 'income' : 'expense';
                 form.setValue('type', requiredType);
@@ -121,8 +135,21 @@ export default function TransactionForm({ onSuccess }) {
     }, [watchedSectionId, sections, form]);
 
     const onSubmit = (data) => {
+        // Custom validation for group leader sections
+        if (selectedSection?.attributes?.type === 'group_leader') {
+            const pilgrimRequired = selectedSection.relationships?.groupLeader?.attributes?.pilgrimRequired;
+            if (pilgrimRequired && !data.pre_registration_id) {
+                form.setError('pre_registration_id', {
+                    type: 'manual',
+                    message: 'Pre-registration is required for this group leader section'
+                });
+                return;
+            }
+        }
+
         data.amount = parseFloat(data.amount) || 0;
         if (!data.loan_id) delete data.loan_id;
+        if (!data.pre_registration_id) delete data.pre_registration_id;
         if (data.pre_registration_ids && data.pre_registration_ids.length === 0) delete data.pre_registration_ids;
         if (data.registration_ids && data.registration_ids.length === 0) delete data.registration_ids;
         createMutation.mutate(data);
@@ -140,7 +167,7 @@ export default function TransactionForm({ onSuccess }) {
                                 <FormLabel>Section *</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder="Select section" />
                                         </SelectTrigger>
                                     </FormControl>
@@ -170,7 +197,7 @@ export default function TransactionForm({ onSuccess }) {
                                     <FormLabel>Type *</FormLabel>
                                     <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select type" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -277,7 +304,7 @@ export default function TransactionForm({ onSuccess }) {
                                         <FormLabel>Related Loan *</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a loan" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -383,18 +410,20 @@ export default function TransactionForm({ onSuccess }) {
                                 name="pre_registration_id"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Pre-registration</FormLabel>
+                                        <FormLabel>
+                                            Pre Registration{selectedSection?.relationships?.groupLeader?.attributes?.pilgrimRequired ? ' *' : ''}
+                                        </FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a pre-registration" />
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Select a Pre Registration" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 {preRegistrations && preRegistrations.length > 0 ? (
                                                     preRegistrations.map((pr) => (
                                                         <SelectItem key={pr.id} value={pr.id.toString()}>
-                                                            {pr.attributes.serialNo} - {pr.relationships?.pilgrim?.attributes?.name}
+                                                            {pr.attributes.serialNo ?? 'N/A'} - {pr.relationships?.pilgrim?.relationships?.user?.attributes?.firstName} {pr.relationships?.pilgrim?.relationships?.user?.attributes?.lastName}
                                                         </SelectItem>
                                                     ))
                                                 ) : null}
