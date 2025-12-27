@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
 
-export function BankTable({ banks, onEdit, onDelete }) {
+export function BankTable({ banks, onEdit, onDelete, onViewTransactions }) {
     return (
         <Table>
             <TableHeader>
@@ -46,22 +46,21 @@ export function BankTable({ banks, onEdit, onDelete }) {
                         <TableCell>
                             <div>
                                 <div className="text-sm">
-                                    {bank.relationships?.bank?.attributes?.openingDate 
-                                        ? new Date(bank.relationships.bank.attributes.openingDate).toLocaleDateString('en-US', { 
-                                            year: 'numeric', 
-                                            month: 'short', 
-                                            day: 'numeric' 
-                                          }) 
+                                    {bank.relationships?.bank?.attributes?.openingDate
+                                        ? new Date(bank.relationships.bank.attributes.openingDate).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })
                                         : 'N/A'}
                                 </div>
                                 <div className="mt-1">
-                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                        bank.relationships?.bank?.attributes?.status === true
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${bank.relationships?.bank?.attributes?.status === true
                                             ? 'bg-green-100 text-green-800'
                                             : bank.relationships?.bank?.attributes?.status === false
                                                 ? 'bg-red-100 text-red-800'
                                                 : 'bg-muted text-muted-foreground'
-                                    }`}>
+                                        }`}>
                                         {bank.relationships?.bank?.attributes?.status === true
                                             ? 'Active'
                                             : bank.relationships?.bank?.attributes?.status === false
@@ -80,6 +79,10 @@ export function BankTable({ banks, onEdit, onDelete }) {
                                         </button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => onViewTransactions(bank)}>
+                                            See Transaction Details
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => onEdit(bank)}>
                                             Edit
                                         </DropdownMenuItem>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -17,6 +18,7 @@ import { Plus, CreditCard } from 'lucide-react'
 export default function Banks() {
     const { t } = useTranslation();
     const queryClient = useQueryClient()
+    const navigate = useNavigate()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingBank, setEditingBank] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
@@ -95,6 +97,10 @@ export default function Banks() {
         setOpenDeleteDialog(true)
     }
 
+    const handleViewTransactions = (bank) => {
+        navigate(`/sections/banks/${bank.id}/transactions`)
+    }
+
     const openCreateDialog = () => {
         setEditingBank(null)
         setDialogOpen(true)
@@ -142,6 +148,7 @@ export default function Banks() {
                                     banks={banks}
                                     onEdit={handleEdit}
                                     onDelete={handleDelete}
+                                    onViewTransactions={handleViewTransactions}
                                 />
                             )}
                         </>

@@ -15,6 +15,7 @@ import Lendings from '@/pages/Lendings/Lendings'
 import LoanTransactions from '@/pages/Lendings/LoanTransactions'
 import Borrowings from '@/pages/Borrowings/Borrowings'
 import BorrowingTransactions from '@/pages/Borrowings/BorrowingTransactions'
+import BankTransactions from '@/pages/Banks/BankTransactions'
 import PreRegistrations from '@/pages/PreRegistrations/PreRegistrations'
 import Registrations from '@/pages/Registrations/Registrations'
 import Umrah from '@/pages/Umrah/Umrah'
@@ -42,6 +43,7 @@ function App() {
           <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
           <Route path="/sections/banks" element={isAuthenticated ? <Banks /> : <Navigate to="/" replace />} />
+          <Route path="/sections/banks/:id/transactions" element={isAuthenticated ? <BankTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/group-leaders" element={isAuthenticated ? <GroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
