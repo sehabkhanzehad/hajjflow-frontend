@@ -95,11 +95,10 @@ export default function BankTransactions() {
                                     </div>
                                     <div>
                                         <div className="flex items-center space-x-2 mb-0.5">
-                                            <span className="text-xs font-medium text-muted-foreground">Bank:</span>
                                             <span className="text-sm font-medium text-foreground">
                                                 {bankData.data.attributes.name}
                                             </span>
-                                            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${bankData.data.relationships?.bank?.attributes?.status === true
+                                            {/* <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${bankData.data.relationships?.bank?.attributes?.status === true
                                                     ? 'bg-green-100 text-green-800'
                                                     : bankData.data.relationships?.bank?.attributes?.status === false
                                                         ? 'bg-red-100 text-red-800'
@@ -110,7 +109,7 @@ export default function BankTransactions() {
                                                     : bankData.data.relationships?.bank?.attributes?.status === false
                                                         ? 'Inactive'
                                                         : 'Unknown'}
-                                            </div>
+                                            </div> */}
                                         </div>
                                         <p className="text-xs text-muted-foreground">
                                             Branch: {bankData.data.relationships?.bank?.attributes?.branch}
