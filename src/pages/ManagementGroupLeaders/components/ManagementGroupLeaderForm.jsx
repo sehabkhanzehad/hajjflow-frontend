@@ -44,6 +44,7 @@ const groupLeaderSchema = z.object({
     is_married: z.boolean(),
     nid: z.string().optional(),
     date_of_birth: z.string().optional(),
+    pilgrim_required: z.boolean(),
     status: z.boolean(),
 })
 
@@ -64,6 +65,7 @@ export function ManagementGroupLeaderForm({ open, onOpenChange, editingGroupLead
             is_married: false,
             nid: '',
             date_of_birth: '',
+            pilgrim_required: false,
             status: true,
         }
     })
@@ -86,6 +88,7 @@ export function ManagementGroupLeaderForm({ open, onOpenChange, editingGroupLead
                 is_married: user?.attributes?.isMarried || false,
                 nid: user?.attributes?.nid || '',
                 date_of_birth: user?.attributes?.dateOfBirth || '',
+                pilgrim_required: editingGroupLeader.attributes.pilgrimRequired || false,
                 status: editingGroupLeader.attributes.status || true,
             })
         } else {
@@ -311,6 +314,24 @@ export function ManagementGroupLeaderForm({ open, onOpenChange, editingGroupLead
                                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                             <div className="space-y-0.5">
                                                 <FormLabel className="text-base">Married</FormLabel>
+                                            </div>
+                                            <FormControl>
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="pilgrim_required"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                            <div className="space-y-0.5">
+                                                <FormLabel className="text-base">Pilgrim Required</FormLabel>
                                             </div>
                                             <FormControl>
                                                 <Switch

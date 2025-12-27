@@ -24,6 +24,7 @@ export function ManagementGroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
                     <TableHead>Leader Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
+                    <TableHead>Pilgrim Required</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                 </TableRow>
@@ -37,6 +38,15 @@ export function ManagementGroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
                         </TableCell>
                         <TableCell>{groupLeader.relationships?.user?.attributes?.email}</TableCell>
                         <TableCell>{groupLeader.relationships?.user?.attributes?.phone}</TableCell>
+                        <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                                groupLeader.attributes.pilgrimRequired
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : 'bg-gray-100 text-gray-800'
+                            }`}>
+                                {groupLeader.attributes.pilgrimRequired ? 'Required' : 'Optional'}
+                            </span>
+                        </TableCell>
                         <TableCell>
                             <span className={`px-2 py-1 rounded-full text-xs ${
                                 groupLeader.attributes.status
