@@ -121,7 +121,7 @@ export default function Others() {
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-center justify-between">
                     <PageHeading title={t('app.sidebar.options.others')} description={t('app.manageSections', { section: t('app.sidebar.options.others') })} />
-                    <Button onClick={() => setDialogOpen(true)} className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setDialogOpen(true)} className="flex items-center gap-2">
                         <Plus className="h-4 w-4" />
                         Add
                     </Button>
