@@ -170,11 +170,10 @@ export default function GroupLeaderTransactions() {
                                                 </TableCell>
                                                 <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                                 <TableCell>
-                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                        transaction?.attributes?.type === 'income'
+                                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-red-100 text-red-800'
-                                                    }`}>
+                                                        }`}>
                                                         {transaction?.attributes?.type ? (transaction.attributes.type.charAt(0).toUpperCase() + transaction.attributes.type.slice(1)) : 'Unknown'}
                                                     </span>
                                                 </TableCell>
@@ -206,7 +205,6 @@ export default function GroupLeaderTransactions() {
                                 </Table>
                             </div>
 
-                            )}
                         </>
                     )}
                 </div>
