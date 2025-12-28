@@ -5,6 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "@/contexts/AuthContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,7 @@ const signInSchema = z.object({
 });
 
 export default function Home() {
+    usePageTitle('Sign In');
     const [formData, setFormData] = useState({
         email: "",
         password: "",

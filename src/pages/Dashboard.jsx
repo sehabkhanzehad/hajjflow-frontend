@@ -6,6 +6,7 @@ import StatCard from '@/components/analytics/StatCard'
 import LineChart from '@/components/analytics/LineChart'
 import PieChart from '@/components/analytics/PieChart'
 import { analyticsApi } from '@/lib/api'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import {
     DollarSign,
     TrendingUp,
@@ -33,6 +34,9 @@ import {
 export default function Dashboard() {
     const { t } = useTranslation();
     const [selectedYear, setSelectedYear] = useState(null);
+
+    // Set page title
+    usePageTitle('Dashboard');
 
     // Fetch years list
     const { data: yearsData } = useQuery({
