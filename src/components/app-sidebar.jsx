@@ -38,7 +38,7 @@ export function AppSidebar({ ...props }) {
   const displayUser = {
     name: user.attributes.name,
     email: user.attributes.email,
-    avatar: "",
+    avatar: user.attributes.avatar,
   };
 
   const navMain = [
