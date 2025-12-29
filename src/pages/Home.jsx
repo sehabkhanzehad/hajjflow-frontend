@@ -23,6 +23,7 @@ const signInSchema = z.object({
 });
 
 export default function Home() {
+    const { t } = useTranslation();
     usePageTitle(t('app.signIn'));
     const [formData, setFormData] = useState({
         email: "",
@@ -33,7 +34,6 @@ export default function Home() {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
-    const { t } = useTranslation();
 
     // TanStack Query mutation for sign in
     const mutation = useMutation({
