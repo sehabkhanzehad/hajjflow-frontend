@@ -27,18 +27,9 @@ import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGro
 import Transactions from '@/pages/Transactions/Transactions'
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { i18n } = useTranslation();
   const language = i18n.language;
-
-  // Show loading screen while checking authentication
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className={language === 'bn' ? 'font-bengali' : ''}>

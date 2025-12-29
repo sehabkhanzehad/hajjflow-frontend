@@ -15,7 +15,7 @@ export default function TableSkeletons({ rows = 5, columns = 6 }) {
                 <TableRow>
                     {Array.from({ length: columns }).map((_, index) => (
                         <TableHead key={index}>
-                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-4 w-20 bg-gray-300" />
                         </TableHead>
                     ))}
                 </TableRow>
@@ -25,7 +25,7 @@ export default function TableSkeletons({ rows = 5, columns = 6 }) {
                     <TableRow key={rowIndex}>
                         {Array.from({ length: columns }).map((_, colIndex) => (
                             <TableCell key={colIndex}>
-                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-full bg-gray-300" />
                             </TableCell>
                         ))}
                     </TableRow>
