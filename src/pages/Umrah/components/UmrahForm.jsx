@@ -45,7 +45,6 @@ const umrahSchema = z.object({
         date_of_birth: z.string().optional(),
     }).optional(),
     package_id: z.string().min(1, "Package is required"),
-    status: z.string().min(1, "Status is required"),
 }).superRefine((data, ctx) => {
     const pilgrimType = data.pilgrim_type || 'existing'
     
@@ -103,7 +102,6 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                 date_of_birth: '',
             },
             package_id: '',
-            status: 'pending',
         }
     })
 
@@ -116,7 +114,6 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                     pilgrim_type: 'existing',
                     pilgrim_id: editingUmrah.relationships?.pilgrim?.id?.toString() || '',
                     package_id: editingUmrah.relationships?.package?.id?.toString() || '',
-                    status: editingUmrah.attributes.status || 'pending',
                 })
             } else {
                 form.reset({
@@ -134,7 +131,6 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
                         date_of_birth: '',
                     },
                     package_id: '',
-                    status: 'pending',
                 })
             }
         }
@@ -156,7 +152,6 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
         const submitData = {
             group_leader_id: data.group_leader_id,
             package_id: data.package_id,
-            status: data.status,
         }
 
         // For editing, pilgrim_type is not in the form, so we assume existing pilgrim
@@ -430,30 +425,6 @@ export function UmrahForm({ open, onOpenChange, editingUmrah, onSubmit, isSubmit
 
                             </div>
                         )}
-
-                        <FormField
-                            control={form.control}
-                            name="status"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Status</FormLabel>
-                                    <Select onValueChange={field.onChange} value={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select status" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="pending">Pending</SelectItem>
-                                            <SelectItem value="confirmed">Confirmed</SelectItem>
-                                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                                            <SelectItem value="completed">Completed</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
                         <DialogFooter>
                             <Button type="submit" disabled={isSubmitting}>

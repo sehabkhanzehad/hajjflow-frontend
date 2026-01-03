@@ -110,7 +110,7 @@ export default function Dashboard() {
                             value={selectedYear?.toString()}
                             onValueChange={(value) => setSelectedYear(parseInt(value))}
                         >
-                            <SelectTrigger className="w-[200px]">
+                            <SelectTrigger className="w-50">
                                 <SelectValue placeholder="Select Year" />
                             </SelectTrigger>
                             <SelectContent>
