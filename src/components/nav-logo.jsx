@@ -20,7 +20,7 @@ export function Logo() {
               <img src="/logo.png" alt="Logo" className="size-8" />
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">M/S Raj Travels</span><span>
+              <span className="truncate font-medium">M/S Raj Travels (v1.0.0)</span><span>
                 <span className="truncate text-xs">License: 0935</span>
               </span>
             </div>
