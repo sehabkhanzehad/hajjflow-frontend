@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import PageHeading from '@/components/PageHeading'
@@ -35,8 +36,8 @@ const umrahSchema = z.object({
     pilgrim_type: z.enum(['existing', 'new']),
     pilgrim_id: z.string().optional(),
     new_pilgrim: z.object({
-        first_name: z.string(),
-        first_name_bangla: z.string(),
+        first_name: z.string().min(1, "First name is required"),
+        first_name_bangla: z.string().min(1, "First name (Bangla) is required"),
         last_name: z.string().optional(),
         last_name_bangla: z.string().optional(),
         mother_name: z.string().optional(),
@@ -45,8 +46,11 @@ const umrahSchema = z.object({
         father_name_bangla: z.string().optional(),
         email: z.string().optional(),
         phone: z.string().optional(),
-        gender: z.enum(['male', 'female', 'other']),
-        is_married: z.boolean().optional(),
+        gender: z.enum(['male', 'female', 'other'], {
+            required_error: "Gender is required",
+            invalid_type_error: "Please select a gender",
+        }),
+        is_married: z.boolean(),
         nid: z.string().optional(),
         birth_certificate_number: z.string().optional(),
         date_of_birth: z.string().optional(),
@@ -58,7 +62,7 @@ const umrahSchema = z.object({
         passport_number: z.string().optional(),
         issue_date: z.string().optional(),
         expiry_date: z.string().optional(),
-        passport_type: z.enum(['ordinary', 'official', 'diplomatic']).optional(),
+        passport_type: z.string().optional(),
         file: z.any().optional(),
         notes: z.string().optional(),
     }).optional(),
@@ -80,28 +84,6 @@ const umrahSchema = z.object({
                 message: "Please fill in new pilgrim details",
                 path: ["new_pilgrim", "first_name"]
             })
-        } else {
-            if (!data.new_pilgrim.first_name || data.new_pilgrim.first_name.trim().length === 0) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "First name is required",
-                    path: ["new_pilgrim", "first_name"]
-                })
-            }
-            if (!data.new_pilgrim.first_name_bangla || data.new_pilgrim.first_name_bangla.trim().length === 0) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "First name (Bangla) is required",
-                    path: ["new_pilgrim", "first_name_bangla"]
-                })
-            }
-            if (!data.new_pilgrim.gender) {
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Gender is required",
-                    path: ["new_pilgrim", "gender"]
-                })
-            }
         }
     }
 
@@ -116,54 +98,51 @@ const umrahSchema = z.object({
             })
         }
     } else if (passportType === 'new') {
-        if (!data.new_passport) {
+        if (!data.new_passport?.passport_number || data.new_passport.passport_number.length === 0) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "Please fill in passport details",
+                message: "Passport number is required",
                 path: ["new_passport", "passport_number"]
             })
-        } else {
-            const hasAnyPassportField = Object.values(data.new_passport).some(val => val && String(val).trim().length > 0)
-
-            if (hasAnyPassportField) {
-                if (!data.new_passport.passport_number || data.new_passport.passport_number.trim().length === 0) {
-                    ctx.addIssue({
-                        code: z.ZodIssueCode.custom,
-                        message: "Passport number is required",
-                        path: ["new_passport", "passport_number"]
-                    })
-                }
-                if (!data.new_passport.issue_date || data.new_passport.issue_date.trim().length === 0) {
-                    ctx.addIssue({
-                        code: z.ZodIssueCode.custom,
-                        message: "Issue date is required",
-                        path: ["new_passport", "issue_date"]
-                    })
-                }
-                if (!data.new_passport.expiry_date || data.new_passport.expiry_date.trim().length === 0) {
-                    ctx.addIssue({
-                        code: z.ZodIssueCode.custom,
-                        message: "Expiry date is required",
-                        path: ["new_passport", "expiry_date"]
-                    })
-                }
-                if (!data.new_passport.passport_type || data.new_passport.passport_type.trim().length === 0) {
-                    ctx.addIssue({
-                        code: z.ZodIssueCode.custom,
-                        message: "Passport type is required",
-                        path: ["new_passport", "passport_type"]
-                    })
-                }
-            }
+        }
+        if (!data.new_passport?.issue_date || data.new_passport.issue_date.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Issue date is required",
+                path: ["new_passport", "issue_date"]
+            })
+        }
+        if (!data.new_passport?.expiry_date || data.new_passport.expiry_date.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Expiry date is required",
+                path: ["new_passport", "expiry_date"]
+            })
+        }
+        if (!data.new_passport?.passport_type || data.new_passport.passport_type.length === 0) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Passport type is required",
+                path: ["new_passport", "passport_type"]
+            })
+        }
+        // Validate passport type enum value
+        if (data.new_passport?.passport_type && !['ordinary', 'official', 'diplomatic'].includes(data.new_passport.passport_type)) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Please select a valid passport type",
+                path: ["new_passport", "passport_type"]
+            })
         }
     }
+    // If passport_type is 'none', no validation needed
 })
 
 export default function CreateUmrah() {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [pilgrimType, setPilgrimType] = useState('existing')
-    const [passportType, setPassportType] = useState('none')
+    const [pilgrimType, setPilgrimType] = useState('new')
+    const [passportType, setPassportType] = useState('new')
     const [availablePassports, setAvailablePassports] = useState([])
     const [loadingPassports, setLoadingPassports] = useState(false)
 
@@ -195,7 +174,7 @@ export default function CreateUmrah() {
         resolver: zodResolver(umrahSchema),
         defaultValues: {
             group_leader_id: '',
-            pilgrim_type: 'existing',
+            pilgrim_type: 'new',
             pilgrim_id: '',
             new_pilgrim: {
                 first_name: '',
@@ -215,13 +194,13 @@ export default function CreateUmrah() {
                 date_of_birth: '',
             },
             package_id: '',
-            passport_type: 'none',
+            passport_type: 'new',
             passport_id: '',
             new_passport: {
                 passport_number: '',
                 issue_date: '',
                 expiry_date: '',
-                passport_type: 'ordinary',
+                passport_type: '',
                 file: null,
                 notes: '',
             },
@@ -294,8 +273,12 @@ export default function CreateUmrah() {
                 formData.append('pilgrim_id', data.pilgrim_id)
             } else {
                 Object.keys(data.new_pilgrim).forEach(key => {
-                    if (data.new_pilgrim[key] !== undefined && data.new_pilgrim[key] !== '') {
-                        formData.append(`new_pilgrim[${key}]`, data.new_pilgrim[key])
+                    const value = data.new_pilgrim[key]
+                    // Always include boolean fields
+                    if (key === 'is_married') {
+                        formData.append(`new_pilgrim[${key}]`, value ? '1' : '0')
+                    } else if (value !== undefined && value !== '') {
+                        formData.append(`new_pilgrim[${key}]`, value)
                     }
                 })
             }
@@ -370,7 +353,7 @@ export default function CreateUmrah() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Group Leader *</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                <Select onValueChange={field.onChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select group leader" />
@@ -395,7 +378,7 @@ export default function CreateUmrah() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Package *</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                <Select onValueChange={field.onChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select package" />
@@ -430,7 +413,7 @@ export default function CreateUmrah() {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Pilgrim Type *</FormLabel>
-                                            <Select onValueChange={handlePilgrimTypeChange} value={field.value}>
+                                            <Select onValueChange={handlePilgrimTypeChange} value={field.value || ""}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
                                                         <SelectValue placeholder="Select pilgrim type" />
@@ -453,7 +436,7 @@ export default function CreateUmrah() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Pilgrim *</FormLabel>
-                                                <Select onValueChange={handlePilgrimChange} value={field.value}>
+                                                <Select onValueChange={handlePilgrimChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder="Select pilgrim" />
@@ -646,7 +629,7 @@ export default function CreateUmrah() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel>Gender *</FormLabel>
-                                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                            <Select onValueChange={field.onChange} value={field.value || ""}>
                                                                 <FormControl>
                                                                     <SelectTrigger className="w-full">
                                                                         <SelectValue placeholder="Select gender" />
@@ -761,7 +744,7 @@ export default function CreateUmrah() {
                                             <FormLabel>Passport Option</FormLabel>
                                             <Select
                                                 onValueChange={handlePassportTypeChange}
-                                                value={field.value}
+                                                value={field.value || ""}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
@@ -788,7 +771,7 @@ export default function CreateUmrah() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Select Passport</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                <Select onValueChange={field.onChange} value={field.value || ""}>
                                                     <FormControl>
                                                         <SelectTrigger className="w-full">
                                                             <SelectValue placeholder={
@@ -816,7 +799,7 @@ export default function CreateUmrah() {
 
                                 {passportType === 'new' && (
                                     <div className="space-y-4 border rounded-lg p-4">
-                                        <h4 className="font-semibold">New Passport Details</h4>
+                                        <h4 className="font-semibold text-foreground">New Passport Details</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <FormField
                                                 control={form.control}
@@ -837,7 +820,7 @@ export default function CreateUmrah() {
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormLabel>Passport Type *</FormLabel>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                        <Select onValueChange={field.onChange} value={field.value || ""}>
                                                             <FormControl>
                                                                 <SelectTrigger className="w-full">
                                                                     <SelectValue placeholder="Select type" />
@@ -880,43 +863,42 @@ export default function CreateUmrah() {
                                                 )}
                                             />
                                         </div>
-                                        <FormField
-                                            control={form.control}
-                                            name="new_passport.file"
-                                            render={({ field: { value, onChange, ...field } }) => (
-                                                <FormItem>
-                                                    <FormLabel>Passport Scan/Photo</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="file"
-                                                            accept="image/jpeg,image/png,image/jpg"
-                                                            onChange={(e) => {
-                                                                const file = e.target.files?.[0]
-                                                                onChange(file)
-                                                            }}
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="new_passport.notes"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Notes</FormLabel>
-                                                    <FormControl>
-                                                        <Textarea
-                                                            placeholder="Additional notes"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.file"
+                                                render={({ field: { value, onChange, ...field } }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Passport Scan/Photo</FormLabel>
+                                                        <FormControl>
+                                                            <ImageUpload
+                                                                value={value instanceof File ? URL.createObjectURL(value) : value}
+                                                                onChange={(file) => onChange(file)}
+                                                                onRemove={() => onChange(null)}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="new_passport.notes"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-col">
+                                                        <FormLabel>Notes</FormLabel>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                placeholder="Additional notes"
+                                                                className="resize-none flex-1"
+                                                                {...field}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                     </div>
                                 )}
                             </CardContent>

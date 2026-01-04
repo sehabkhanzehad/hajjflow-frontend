@@ -76,8 +76,8 @@ export default function Umrah() {
         }
     })
 
-    const handleEdit = (umrah) => {
-        navigate(`/umrah/edit/${umrah.id}`)
+    const handleView = (umrah) => {
+        navigate(`/umrah/view/${umrah.id}`)
     }
 
     const handleDelete = (umrah) => {
@@ -109,7 +109,7 @@ export default function Umrah() {
                     ) : umrahs?.length > 0 ? (
                         <UmrahTable
                             umrahs={umrahs}
-                            onEdit={handleEdit}
+                            onView={handleView}
                             onDelete={handleDelete}
                         />
                     ) : (
