@@ -48,6 +48,7 @@ const umrahSchema = z.object({
         gender: z.enum(['male', 'female', 'other']),
         is_married: z.boolean().optional(),
         nid: z.string().optional(),
+        birth_certificate_number: z.string().optional(),
         date_of_birth: z.string().optional(),
     }).optional(),
     package_id: z.string().min(1, "Package is required"),
@@ -207,9 +208,10 @@ export default function CreateUmrah() {
                 father_name_bangla: '',
                 email: '',
                 phone: '',
-                gender: 'male',
+                gender: '',
                 is_married: false,
                 nid: '',
+                birth_certificate_number: '',
                 date_of_birth: '',
             },
             package_id: '',
@@ -646,6 +648,19 @@ export default function CreateUmrah() {
                                                         <FormLabel>NID</FormLabel>
                                                         <FormControl>
                                                             <Input placeholder="Enter NID" {...field} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={form.control}
+                                                name="new_pilgrim.birth_certificate_number"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Birth Certificate Number</FormLabel>
+                                                        <FormControl>
+                                                            <Input placeholder="Enter birth certificate number" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
