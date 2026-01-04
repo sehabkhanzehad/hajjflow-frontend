@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import {
     ArrowLeft,
     User,
@@ -19,7 +25,8 @@ import {
     MapPin,
     IdCard,
     Heart,
-    Clock
+    Clock,
+    Image
 } from 'lucide-react'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
@@ -29,6 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function ViewUmrah() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const [showPassportDialog, setShowPassportDialog] = useState(false)
 
     const { data: umrah, isLoading, error } = useQuery({
         queryKey: ['umrah', id],
@@ -353,6 +361,18 @@ export default function ViewUmrah() {
                                                 <p className="text-sm font-medium">{passport.notes}</p>
                                             </div>
                                         )}
+                                        {passport.filePath && (
+                                            <div className="col-span-2 pt-2">
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setShowPassportDialog(true)}
+                                                    className="w-full"
+                                                >
+                                                    <Image className="h-4 w-4" /> View Passport
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ) : (
@@ -408,6 +428,31 @@ export default function ViewUmrah() {
                     </Card>
                 </div>
             </div>
+
+            {/* Passport Image Dialog */}
+            <Dialog open={showPassportDialog} onOpenChange={setShowPassportDialog}>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+                    <DialogHeader>
+                        <DialogTitle>Passport - {passport?.passportNumber}</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex justify-center items-center p-4">
+                        {passport?.filePath ? (
+                            <img
+                                src={passport.filePath}
+                                alt="Passport"
+                                className="max-w-full h-auto rounded-lg shadow-lg"
+                                onError={(e) => {
+                                    e.target.src = ''
+                                    e.target.alt = 'Failed to load passport image'
+                                    e.target.className = 'text-muted-foreground'
+                                }}
+                            />
+                        ) : (
+                            <p className="text-muted-foreground">No passport image available</p>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </DashboardLayout>
     )
 }
