@@ -32,7 +32,7 @@ import {
 
 const preRegistrationSchema = z.object({
     group_leader_id: z.string().min(1, "Group leader is required"),
-    bank_id: z.string().min(1, "Bank is required"),
+    bank_id: z.string().optional(),
     first_name: z.string().min(1, "First name is required"),
     last_name: z.string().optional(),
     mother_name: z.string().optional(),
@@ -47,6 +47,18 @@ const preRegistrationSchema = z.object({
     bank_voucher_no: z.string().optional(),
     date: z.string().optional(),
     status: z.enum(['pending', 'active'], "Status is required"),
+}).refine((data) => data.status !== 'active' || (data.bank_id && data.bank_id.length > 0), {
+    message: "Bank is required when status is active",
+    path: ["bank_id"],
+}).refine((data) => data.status !== 'active' || (data.serial_no && data.serial_no.length > 0), {
+    message: "Serial No is required when status is active",
+    path: ["serial_no"],
+}).refine((data) => data.status !== 'active' || (data.bank_voucher_no && data.bank_voucher_no.length > 0), {
+    message: "Bank Voucher No is required when status is active",
+    path: ["bank_voucher_no"],
+}).refine((data) => data.status !== 'active' || (data.date && data.date.length > 0), {
+    message: "Date is required when status is active",
+    path: ["date"],
 })
 
 export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration, onSubmit, isSubmitting, groupLeaders, banks }) {
@@ -93,6 +105,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                 serial_no: editingPreRegistration.attributes.serialNo || '',
                 bank_voucher_no: editingPreRegistration.attributes.bankVoucherNo || '',
                 date: editingPreRegistration.attributes.date ? new Date(editingPreRegistration.attributes.date).toISOString().split('T')[0] : '',
+                status: editingPreRegistration.attributes.status || 'active',
             })
             form.setValue('date', editingPreRegistration.attributes.date ? new Date(editingPreRegistration.attributes.date).toISOString().split('T')[0] : '')
             form.trigger('date')
@@ -164,22 +177,19 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                 />
                                 <FormField
                                     control={form.control}
-                                    name="bank_id"
+                                    name="status"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Bank *</FormLabel>
+                                            <FormLabel>Status *</FormLabel>
                                             <Select onValueChange={field.onChange} value={field.value}>
                                                 <FormControl>
                                                     <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Select bank" />
+                                                        <SelectValue placeholder="Select status" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {banks?.map((bank) => (
-                                                        <SelectItem key={bank.id} value={bank.id.toString()}>
-                                                            {bank.attributes.name}
-                                                        </SelectItem>
-                                                    ))}
+                                                    <SelectItem value="pending">Pending</SelectItem>
+                                                    <SelectItem value="active">Active</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -187,29 +197,30 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     )}
                                 />
                             </div>
-                            {!editingPreRegistration && (
                             <FormField
                                 control={form.control}
-                                name="status"
+                                name="bank_id"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Status *</FormLabel>
+                                        <FormLabel>Bank{form.watch('status') === 'active' ? ' *' : ''}</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder="Select status" />
+                                                    <SelectValue placeholder="Select bank" />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="pending">Pending</SelectItem>
-                                                <SelectItem value="active">Active</SelectItem>
+                                                {banks?.map((bank) => (
+                                                    <SelectItem key={bank.id} value={bank.id.toString()}>
+                                                        {bank.attributes.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            )}
                         </div>
                         <div className="border rounded-lg p-4 space-y-4">
                             <h3 className="text-lg font-semibold">Personal Information</h3>
@@ -377,7 +388,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     name="serial_no"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Serial No</FormLabel>
+                                            <FormLabel>Serial No{form.watch('status') === 'active' ? ' *' : ''}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>
@@ -392,7 +403,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     name="bank_voucher_no"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Bank Voucher No</FormLabel>
+                                            <FormLabel>Bank Voucher No{form.watch('status') === 'active' ? ' *' : ''}</FormLabel>
                                             <FormControl>
                                                 <Input {...field} />
                                             </FormControl>
@@ -405,7 +416,7 @@ export function PreRegistrationForm({ open, onOpenChange, editingPreRegistration
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Date</FormLabel>
+                                            <FormLabel>Date{form.watch('status') === 'active' ? ' *' : ''}</FormLabel>
                                             <FormControl>
                                                 <Input type="date" {...field} />
                                             </FormControl>
