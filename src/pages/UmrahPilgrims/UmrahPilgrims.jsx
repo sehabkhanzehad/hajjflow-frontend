@@ -14,7 +14,7 @@ import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, FileText } from 'lucide-react'
 
-export default function Umrah() {
+export default function UmrahPilgrims() {
     const { t } = useTranslation();
     const navigate = useNavigate()
     const queryClient = useQueryClient()

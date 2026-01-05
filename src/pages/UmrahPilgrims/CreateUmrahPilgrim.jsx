@@ -138,7 +138,7 @@ const umrahSchema = z.object({
     // If passport_type is 'none', no validation needed
 })
 
-export default function CreateUmrah() {
+export default function CreateUmrahPilgrim() {
     const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [pilgrimType, setPilgrimType] = useState('new')

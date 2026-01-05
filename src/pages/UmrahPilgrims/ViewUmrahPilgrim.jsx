@@ -33,7 +33,7 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import PageHeading from '@/components/PageHeading'
 import { Skeleton } from "@/components/ui/skeleton"
 
-export default function ViewUmrah() {
+export default function ViewUmrahPilgrim() {
     const { id } = useParams()
     const navigate = useNavigate()
     const [showPassportDialog, setShowPassportDialog] = useState(false)
