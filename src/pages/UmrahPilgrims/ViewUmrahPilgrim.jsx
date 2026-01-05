@@ -13,10 +13,17 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog"
 import {
     ArrowLeft,
@@ -34,7 +41,11 @@ import {
     Clock,
     Image,
     Edit,
-    Plus
+    Plus,
+    Check,
+    XCircle,
+    RotateCw,
+    EllipsisVertical
 } from 'lucide-react'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
@@ -52,6 +63,11 @@ export default function ViewUmrahPilgrim() {
     const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false)
     const [showContactInfoModal, setShowContactInfoModal] = useState(false)
     const [showAvatarModal, setShowAvatarModal] = useState(false)
+
+    // Status action dialogs
+    const [showConfirmCancel, setShowConfirmCancel] = useState(false)
+    const [showConfirmComplete, setShowConfirmComplete] = useState(false)
+    const [showConfirmRestore, setShowConfirmRestore] = useState(false)
 
     const { data: umrah, isLoading, error } = useQuery({
         queryKey: ['umrah', id],
@@ -152,6 +168,43 @@ export default function ViewUmrahPilgrim() {
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || t({ en: 'Failed to update photo', bn: 'ছবি আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Status actions
+    const markAsCanceledMutation = useMutation({
+        mutationFn: () => api.post(`/umrahs/${id}/cancel`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowConfirmCancel(false)
+            toast.success(t({ en: 'Umrah marked as canceled', bn: 'উমরাহ বাতিল করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to cancel umrah', bn: 'উমরাহ বাতিল করতে ব্যর্থ' }))
+        }
+    })
+
+    const markAsCompletedMutation = useMutation({
+        mutationFn: () => api.post(`/umrahs/${id}/complete`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowConfirmComplete(false)
+            toast.success(t({ en: 'Umrah marked as completed', bn: 'উমরাহ সম্পন্ন হিসেবে চিহ্নিত হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to mark as completed', bn: 'সমাপ্ত হিসেবে চিহ্নিত করতে ব্যর্থ' }))
+        }
+    })
+
+    const restoreMutation = useMutation({
+        mutationFn: () => api.post(`/umrahs/${id}/restore`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowConfirmRestore(false)
+            toast.success(t({ en: 'Umrah restored to active status', bn: 'উমরাহ পুনরায় সক্রিয় করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to restore umrah', bn: 'উমরাহ পুনরুদ্ধার করতে ব্যর্থ' }))
         }
     })
 
@@ -269,7 +322,49 @@ export default function ViewUmrahPilgrim() {
                 </div>
 
                 {/* Profile Card with Avatar */}
-                <Card className="border-2">
+                <Card className="border-2 relative">
+                    {/* Status action menu (top-right of card) */}
+                    <div className="absolute top-4 right-4 z-10">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="ghost" className="h-8 w-8 p-1">
+                                    <EllipsisVertical className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-48">
+                                {/* When registered: Complete + Cancel */}
+                                {umrah.attributes.status === 'registered' && (
+                                    <>
+                                        <DropdownMenuItem onClick={() => setShowConfirmComplete(true)} disabled={markAsCompletedMutation.isPending} className="gap-2">
+                                            <Check className="h-4 w-4 text-green-600" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Mark as Completed', bn: 'সম্পন্ন হিসেবে চিহ্নিত করুন' })}</span>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => setShowConfirmCancel(true)} className="text-destructive gap-2" disabled={markAsCanceledMutation.isPending}>
+                                            <XCircle className="h-4 w-4" />
+                                            <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel Umrah', bn: 'উমরাহ বাতিল করুন' })}</span>
+                                        </DropdownMenuItem>
+                                    </>
+                                )}
+
+                                {/* When cancelled: Restore */}
+                                {umrah.attributes.status === 'cancelled' && (
+                                    <DropdownMenuItem onClick={() => setShowConfirmRestore(true)} disabled={restoreMutation.isPending} className="gap-2">
+                                        <RotateCw className="h-4 w-4" />
+                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Restore Umrah', bn: 'উমরাহ পুনরুদ্ধার করুন' })}</span>
+                                    </DropdownMenuItem>
+                                )}
+
+                                {/* Always available: View Passports (if any) */}
+                                {passport && (
+                                    <DropdownMenuItem onClick={() => setShowPassportDialog(true)} className="gap-2">
+                                        <Image className="h-4 w-4" />
+                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
+                                    </DropdownMenuItem>
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                             <div className="relative">
@@ -637,6 +732,60 @@ export default function ViewUmrahPilgrim() {
                 onSubmit={handlePassportSubmit}
                 isSubmitting={addPassportMutation.isPending || updatePassportMutation.isPending}
             />
+
+            {/* Confirm Cancel Dialog */}
+            <Dialog open={showConfirmCancel} onOpenChange={setShowConfirmCancel}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Confirm Cancel', bn: 'বাতিল নিশ্চিতকরণ' })}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-2">
+                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Are you sure you want to cancel this Umrah? This action cannot be undone.', bn: 'আপনি কি নিশ্চিত যে আপনি এই উমরাহ বাতিল করতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না।' })}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowConfirmCancel(false)} disabled={markAsCanceledMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল' })}</Button>
+                        <Button variant="destructive" onClick={() => markAsCanceledMutation.mutate()} disabled={markAsCanceledMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>
+                            {markAsCanceledMutation.isPending ? t({ en: 'Cancelling...', bn: 'বাতিল হচ্ছে...' }) : t({ en: 'Yes, Cancel', bn: 'হ্যাঁ, বাতিল করুন' })}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Confirm Complete Dialog */}
+            <Dialog open={showConfirmComplete} onOpenChange={setShowConfirmComplete}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Confirm Complete', bn: 'সম্পন্ন নিশ্চিতকরণ' })}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-2">
+                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Mark this Umrah as completed? This will finalize the registration.', bn: 'আপনি কি এই উমরাহ সম্পন্ন হিসেবে চিহ্নিত করতে চান? এটি রেজিস্ট্রেশন চূড়ান্ত করবে।' })}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowConfirmComplete(false)} disabled={markAsCompletedMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল' })}</Button>
+                        <Button variant="secondary" onClick={() => markAsCompletedMutation.mutate()} disabled={markAsCompletedMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>
+                            {markAsCompletedMutation.isPending ? t({ en: 'Completing...', bn: 'সম্পন্ন হচ্ছে...' }) : t({ en: 'Yes, Complete', bn: 'হ্যাঁ, সম্পন্ন করুন' })}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Confirm Restore Dialog */}
+            <Dialog open={showConfirmRestore} onOpenChange={setShowConfirmRestore}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Confirm Restore', bn: 'পুনরুদ্ধার নিশ্চিতকরণ' })}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-2">
+                        <p className={`text-sm ${language === 'bn' ? 'font-bengali' : ''}`}>{t({ en: 'Restore this Umrah to active status?', bn: 'আপনি কি এই উমরাহ পুনরায় সক্রিয় করতে চান?' })}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowConfirmRestore(false)} disabled={restoreMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল' })}</Button>
+                        <Button variant="default" onClick={() => restoreMutation.mutate()} disabled={restoreMutation.isPending} className={language === 'bn' ? 'font-bengali' : ''}>
+                            {restoreMutation.isPending ? t({ en: 'Restoring...', bn: 'পুনরুদ্ধার হচ্ছে...' }) : t({ en: 'Yes, Restore', bn: 'হ্যাঁ, পুনরুদ্ধার করুন' })}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Personal Info Edit Modal */}
             <EditPersonalInfoModal
