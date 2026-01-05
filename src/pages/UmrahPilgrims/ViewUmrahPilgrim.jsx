@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { PassportModal } from './components/PassportModal'
+import { toast } from 'sonner'
+import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -26,7 +29,9 @@ import {
     IdCard,
     Heart,
     Clock,
-    Image
+    Image,
+    Edit,
+    Plus
 } from 'lucide-react'
 import api from '@/lib/api'
 import DashboardLayout from '@/Layouts/DashboardLayout'
@@ -36,7 +41,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function ViewUmrahPilgrim() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    const { t, language } = useI18n()
     const [showPassportDialog, setShowPassportDialog] = useState(false)
+    const [showPassportModal, setShowPassportModal] = useState(false)
+    const [editingPassport, setEditingPassport] = useState(null)
 
     const { data: umrah, isLoading, error } = useQuery({
         queryKey: ['umrah', id],
@@ -45,6 +54,59 @@ export default function ViewUmrahPilgrim() {
             return response.data.data
         }
     })
+
+    const addPassportMutation = useMutation({
+        mutationFn: (formData) => api.post(`/umrahs/${id}/passport`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPassportModal(false)
+            setEditingPassport(null)
+            toast.success(t({ en: 'Passport added successfully', bn: 'পাসপোর্ট সফলভাবে যোগ করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to add passport', bn: 'পাসপোর্ট যোগ করতে ব্যর্থ' }))
+        }
+    })
+
+    const updatePassportMutation = useMutation({
+        mutationFn: (formData) => {
+            const passportId = umrah?.relationships?.passport?.id
+            return api.post(`/umrahs/passport/${passportId}?_method=PUT`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPassportModal(false)
+            setEditingPassport(null)
+            toast.success(t({ en: 'Passport updated successfully', bn: 'পাসপোর্ট সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update passport', bn: 'পাসপোর্ট আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    const handlePassportSubmit = (formData) => {
+        if (editingPassport) {
+            updatePassportMutation.mutate(formData)
+        } else {
+            addPassportMutation.mutate(formData)
+        }
+    }
+
+    const handleAddPassport = () => {
+        setEditingPassport(null)
+        setShowPassportModal(true)
+    }
+
+    const handleEditPassport = () => {
+        if (passport) {
+            setEditingPassport(passport)
+            setShowPassportModal(true)
+        }
+    }
 
     useEffect(() => {
         if (error) {
@@ -285,7 +347,18 @@ export default function ViewUmrahPilgrim() {
                             {/* Passport Information */}
                             {passport ? (
                                 <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Passport Details</h4>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Passport Details</h4>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={handleEditPassport}
+                                            className="h-7 gap-1"
+                                        >
+                                            <Edit className="h-3 w-3" />
+                                            {t({ en: "Edit", bn: "এডিট" })}
+                                        </Button>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                         <div>
                                             <p className="text-[10px] text-muted-foreground">Passport Number</p>
@@ -345,7 +418,16 @@ export default function ViewUmrahPilgrim() {
                                     <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Passport Details</h4>
                                     <div className="text-center py-4 text-muted-foreground">
                                         <FileText className="h-8 w-8 mx-auto mb-1 opacity-50" />
-                                        <p className="text-xs">No passport information</p>
+                                        <p className="text-xs mb-3">{t({ en: "No passport information", bn: "কোন পাসপোর্ট তথ্য নেই" })}</p>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAddPassport}
+                                            className="gap-2"
+                                        >
+                                            <Plus className="h-4 w-4" />
+                                            {t({ en: "Add Passport", bn: "পাসপোর্ট যোগ করুন" })}
+                                        </Button>
                                     </div>
                                 </div>
                             )}
@@ -403,7 +485,7 @@ export default function ViewUmrahPilgrim() {
                     <div className="flex justify-center items-center p-4">
                         {passport?.filePath ? (
                             <img
-                                src={passport.filePath}
+                                src={`${passport.filePath}?t=${Date.now()}`}
                                 alt="Passport"
                                 className="max-w-full h-auto rounded-lg shadow-lg"
                                 onError={(e) => {
@@ -418,6 +500,15 @@ export default function ViewUmrahPilgrim() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Passport Management Modal */}
+            <PassportModal
+                open={showPassportModal}
+                onOpenChange={setShowPassportModal}
+                editingPassport={editingPassport}
+                onSubmit={handlePassportSubmit}
+                isSubmitting={addPassportMutation.isPending || updatePassportMutation.isPending}
+            />
         </DashboardLayout>
     )
 }
