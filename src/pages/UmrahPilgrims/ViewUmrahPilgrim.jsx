@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PassportModal } from './components/PassportModal'
+import { EditPersonalInfoModal } from './components/EditPersonalInfoModal'
+import { EditContactInfoModal } from './components/EditContactInfoModal'
+import { EditAvatarModal } from './components/EditAvatarModal'
 import { toast } from 'sonner'
 import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -46,6 +49,9 @@ export default function ViewUmrahPilgrim() {
     const [showPassportDialog, setShowPassportDialog] = useState(false)
     const [showPassportModal, setShowPassportModal] = useState(false)
     const [editingPassport, setEditingPassport] = useState(null)
+    const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false)
+    const [showContactInfoModal, setShowContactInfoModal] = useState(false)
+    const [showAvatarModal, setShowAvatarModal] = useState(false)
 
     const { data: umrah, isLoading, error } = useQuery({
         queryKey: ['umrah', id],
@@ -107,6 +113,47 @@ export default function ViewUmrahPilgrim() {
             setShowPassportModal(true)
         }
     }
+
+    // Personal Info mutation
+    const updatePersonalInfoMutation = useMutation({
+        mutationFn: (data) => api.put(`/umrahs/${id}/pilgrim/personal-info`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowPersonalInfoModal(false)
+            toast.success(t({ en: 'Personal information updated successfully', bn: 'ব্যক্তিগত তথ্য সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update personal information', bn: 'ব্যক্তিগত তথ্য আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Contact Info mutation
+    const updateContactInfoMutation = useMutation({
+        mutationFn: (data) => api.put(`/umrahs/${id}/pilgrim/contact-info`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowContactInfoModal(false)
+            toast.success(t({ en: 'Contact & identification updated successfully', bn: 'যোগাযোগ এবং পরিচয় সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update contact & identification', bn: 'যোগাযোগ এবং পরিচয় আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Avatar mutation
+    const updateAvatarMutation = useMutation({
+        mutationFn: (formData) => api.post(`/umrahs/${id}/pilgrim/avatar`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['umrah', id] })
+            setShowAvatarModal(false)
+            toast.success(t({ en: 'Photo updated successfully', bn: 'ছবি সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update photo', bn: 'ছবি আপডেট করতে ব্যর্থ' }))
+        }
+    })
 
     useEffect(() => {
         if (error) {
@@ -190,12 +237,22 @@ export default function ViewUmrahPilgrim() {
                 <Card className="border-2">
                     <CardContent className="pt-6">
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
-                                <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                                <AvatarFallback className="text-2xl font-bold bg-linear-to-br from-primary/20 to-primary/5">
-                                    {getInitials(user?.firstName, user?.lastName)}
-                                </AvatarFallback>
-                            </Avatar>
+                            <div className="relative">
+                                <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                                    <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                                    <AvatarFallback className="text-2xl font-bold bg-linear-to-br from-primary/20 to-primary/5">
+                                        {getInitials(user?.firstName, user?.lastName)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <Button
+                                    variant="secondary"
+                                    size="icon"
+                                    onClick={() => setShowAvatarModal(true)}
+                                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full shadow-md"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                </Button>
+                            </div>
                             <div className="flex-1 text-center sm:text-left space-y-2">
                                 <div>
                                     <h2 className="text-2xl font-bold tracking-tight">{user?.fullName || 'N/A'}</h2>
@@ -246,10 +303,21 @@ export default function ViewUmrahPilgrim() {
                     {/* Personal & Family Information Combined */}
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <User className="h-4 w-4 text-primary" />
-                                Personal & Family Information
-                            </CardTitle>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <User className="h-4 w-4 text-primary" />
+                                    Personal & Family Information
+                                </CardTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowPersonalInfoModal(true)}
+                                    className="h-8 gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    {t({ en: "Edit", bn: "এডিট" })}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* Personal Details */}
@@ -319,10 +387,21 @@ export default function ViewUmrahPilgrim() {
                     {/* Identification & Passport Combined */}
                     <Card>
                         <CardHeader className="pb-3">
-                            <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                <IdCard className="h-4 w-4 text-primary" />
-                                Identification & Documents
-                            </CardTitle>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                    <IdCard className="h-4 w-4 text-primary" />
+                                    Identification & Documents
+                                </CardTitle>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setShowContactInfoModal(true)}
+                                    className="h-8 gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    {t({ en: "Edit", bn: "এডিট" })}
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {/* ID Documents */}
@@ -508,6 +587,33 @@ export default function ViewUmrahPilgrim() {
                 editingPassport={editingPassport}
                 onSubmit={handlePassportSubmit}
                 isSubmitting={addPassportMutation.isPending || updatePassportMutation.isPending}
+            />
+
+            {/* Personal Info Edit Modal */}
+            <EditPersonalInfoModal
+                open={showPersonalInfoModal}
+                onOpenChange={setShowPersonalInfoModal}
+                pilgrimData={user}
+                onSubmit={(data) => updatePersonalInfoMutation.mutate(data)}
+                isSubmitting={updatePersonalInfoMutation.isPending}
+            />
+
+            {/* Contact Info Edit Modal */}
+            <EditContactInfoModal
+                open={showContactInfoModal}
+                onOpenChange={setShowContactInfoModal}
+                pilgrimData={user}
+                onSubmit={(data) => updateContactInfoMutation.mutate(data)}
+                isSubmitting={updateContactInfoMutation.isPending}
+            />
+
+            {/* Avatar Edit Modal */}
+            <EditAvatarModal
+                open={showAvatarModal}
+                onOpenChange={setShowAvatarModal}
+                currentAvatar={user?.avatar}
+                onSubmit={(formData) => updateAvatarMutation.mutate(formData)}
+                isSubmitting={updateAvatarMutation.isPending}
             />
         </DashboardLayout>
     )
