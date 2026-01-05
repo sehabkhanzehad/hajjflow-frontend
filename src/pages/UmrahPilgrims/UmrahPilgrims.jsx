@@ -23,30 +23,6 @@ export default function UmrahPilgrims() {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [umrahToDelete, setUmrahToDelete] = useState(null)
 
-    const { data: packages } = useQuery({
-        queryKey: ['umrah-packages'],
-        queryFn: async () => {
-            const response = await api.get('/umrahs/packages')
-            return response.data.data
-        }
-    })
-
-    const { data: groupLeaders } = useQuery({
-        queryKey: ['umrah-group-leaders'],
-        queryFn: async () => {
-            const response = await api.get('/umrahs/group-leaders')
-            return response.data.data
-        }
-    })
-
-    const { data: pilgrims } = useQuery({
-        queryKey: ['umrah-pilgrims'],
-        queryFn: async () => {
-            const response = await api.get('/umrahs/pilgrims')
-            return response.data.data
-        }
-    })
-
     const { data, isLoading } = useQuery({
         queryKey: ['umrahs', currentPage, rowsPerPage],
         queryFn: async () => {
