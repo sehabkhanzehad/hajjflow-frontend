@@ -82,13 +82,13 @@ export function AppSidebar({ ...props }) {
       icon: GalleryVerticalEnd,
       items: [
         {
+          title: t('app.sidebar.options.packages'),
+          url: "/umrah-packages",
+        },
+        {
           title: t('app.sidebar.options.pilgrims'),
           url: "/umrah",
         },
-        {
-          title: t('app.sidebar.options.packages'),
-          url: "/umrah-packages",
-        }
       ],
     }
   ];

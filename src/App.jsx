@@ -8,6 +8,7 @@ import Banks from '@/pages/Banks/Banks'
 import GroupLeaders from '@/pages/GroupLeaders/GroupLeaders'
 import HajjPackages from '@/pages/HajjPackages/HajjPackages'
 import UmrahPackages from '@/pages/UmrahPackages/UmrahPackages'
+import PackagePilgrims from '@/pages/UmrahPackages/PackagePilgrims'
 import Employees from '@/pages/Employees/Employees'
 import EmployeeTransactions from '@/pages/Employees/EmployeeTransactions'
 import GroupLeaderTransactions from '@/pages/GroupLeaders/GroupLeaderTransactions'
@@ -50,6 +51,7 @@ function App() {
           <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
           <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages" element={isAuthenticated ? <UmrahPackages /> : <Navigate to="/" replace />} />
+          <Route path="/umrah-packages/:id/pilgrims" element={isAuthenticated ? <PackagePilgrims /> : <Navigate to="/" replace />} />
           <Route path="/sections/employees" element={isAuthenticated ? <Employees /> : <Navigate to="/" replace />} />
           <Route path="/sections/employees/:id/transactions" element={isAuthenticated ? <EmployeeTransactions /> : <Navigate to="/" replace />} />
           <Route path="/sections/bills" element={isAuthenticated ? <Bills /> : <Navigate to="/" replace />} />

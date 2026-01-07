@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -16,6 +17,7 @@ import { Plus, Package } from 'lucide-react'
 
 export default function UmrahPackages() {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingPackage, setEditingPackage] = useState(null)
@@ -108,20 +110,38 @@ export default function UmrahPackages() {
         setDialogOpen(true)
     }
 
+    const openCreatePilgrimPage = () => {
+        navigate('/umrah/create')
+    }
+
+    const handleViewPilgrims = (pkg) => {
+        navigate(`/umrah-packages/${pkg.id}/pilgrims`)
+    }
+
     const isSubmitting = createMutation.isPending || updateMutation.isPending
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                { type: 'link', text: t('app.home'), href: '/' },
+                { type: 'page', text: 'Umrah Packages' },
+            ]}>
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
                         title="Umrah Packages"
                         description="Manage Umrah packages for pilgrims"
                     />
-                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add Umrah Package
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={openCreatePilgrimPage} className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Add Pilgrim
+                        </Button>
+                        <Button variant="outline" onClick={openCreateDialog} className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Add Package
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="flex-1">
@@ -132,6 +152,7 @@ export default function UmrahPackages() {
                             packages={packages}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onViewPilgrims={handleViewPilgrims}
                         />
                     ) : (
                         <EmptyComponent

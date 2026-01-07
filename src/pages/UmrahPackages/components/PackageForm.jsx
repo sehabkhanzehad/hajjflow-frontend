@@ -50,16 +50,23 @@ export function PackageForm({ open, onOpenChange, editingPackage, onSubmit, isSu
         }
     })
 
+    // Helper function to format date for HTML date input (YYYY-MM-DD)
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return ''
+        const date = new Date(dateString)
+        return date.toISOString().split('T')[0]
+    }
+
     useEffect(() => {
         if (editingPackage) {
             form.reset({
                 name: editingPackage.attributes.name || '',
-                start_date: editingPackage.attributes.start_date || '',
-                end_date: editingPackage.attributes.end_date || '',
+                start_date: formatDateForInput(editingPackage.attributes.start_date),
+                end_date: formatDateForInput(editingPackage.attributes.end_date),
                 duration_days: editingPackage.attributes.duration_days?.toString() || '',
                 price: editingPackage.attributes.price?.toString() || '',
                 description: editingPackage.attributes.description || '',
-                status: editingPackage.attributes.status || true,
+                status: Boolean(editingPackage.attributes.status),
             })
         } else {
             form.reset({

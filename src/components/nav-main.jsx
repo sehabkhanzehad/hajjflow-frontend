@@ -30,8 +30,8 @@ export function NavMain({ items, section }) {
         {items.map((item) => {
           const hasChildren = item.items && item.items.length > 0;
 
-          // Check if any subItem is active or if current path starts with parent URL
-          const isSubActive = item.items?.some((subItem) => subItem.url === currentPath) || currentPath.startsWith(item.url + '/');
+          // Check if any subItem is active or if current path starts with parent URL or any subItem URL
+          const isSubActive = item.items?.some((subItem) => subItem.url === currentPath || currentPath.startsWith(subItem.url + '/')) || currentPath.startsWith(item.url + '/');
 
           if (hasChildren) {
             return (
