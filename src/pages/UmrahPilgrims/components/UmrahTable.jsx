@@ -57,6 +57,7 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                     <TableHead>{t({ en: "Passport", bn: "পাসপোর্ট" })}</TableHead>
                     <TableHead>{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
                     <TableHead>{t({ en: "Package", bn: "প্যাকেজ" })}</TableHead>
+                    <TableHead className="text-right">{t({ en: "Financial Info", bn: "আর্থিক তথ্য" })}</TableHead>
                     <TableHead>{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
                     <TableHead>{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
                     <TableHead className="text-right">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
@@ -143,6 +144,18 @@ export function UmrahTable({ umrahs, onDelete, onView }) {
                                             ৳{parseFloat(packageData.price).toLocaleString()}
                                         </div>
                                     )}
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <div className="space-y-1">
+                                    <div className="text-xs">
+                                        <span className="text-muted-foreground">{t({ en: 'Paid:', bn: 'পরিশোধ:' })}</span>
+                                        <span className="font-semibold text-green-600 ml-1">৳{parseFloat(umrah.attributes.totalPaid || 0).toLocaleString()}</span>
+                                    </div>
+                                    <div className="text-xs">
+                                        <span className="text-muted-foreground">{t({ en: 'Discount:', bn: 'ডিসকাউন্ট:' })}</span>
+                                        <span className="font-semibold text-blue-600 ml-1">৳{parseFloat(umrah.attributes.discount || 0).toLocaleString()}</span>
+                                    </div>
                                 </div>
                             </TableCell>
 
