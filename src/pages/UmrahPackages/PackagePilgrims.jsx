@@ -123,13 +123,10 @@ export default function PackagePilgrims() {
                                             })}
                                         </span>
                                     )}
-                                    {packageInfo.duration_days && (
-                                        <span>• {packageInfo.duration_days} days</span>
-                                    )}
                                 </div>
                             </div>
 
-                            {/* Statistics - Improved Design */}
+                            {/* Statistics */}
                             <div className="flex items-center gap-3">
                                 <div className="bg-muted/50 rounded-lg px-3 py-2 w-20 text-center">
                                     <div className="flex items-center justify-center gap-1 mb-1">
