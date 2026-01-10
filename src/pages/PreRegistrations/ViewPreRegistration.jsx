@@ -6,6 +6,7 @@ import { EditPersonalInfoModal } from './components/EditPersonalInfoModal'
 import { EditContactInfoModal } from './components/EditContactInfoModal'
 import { EditAvatarModal } from './components/EditAvatarModal'
 import { EditAddressModal } from './components/EditAddressModal'
+import { EditRegistrationModal } from './components/EditRegistrationModal'
 import { toast } from 'sonner'
 import { useI18n } from '@/contexts/I18nContext'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -109,6 +110,7 @@ export default function ViewPreRegistration() {
     const [showContactInfoModal, setShowContactInfoModal] = useState(false)
     const [showAvatarModal, setShowAvatarModal] = useState(false)
     const [showAddressModal, setShowAddressModal] = useState(false)
+    const [showRegistrationModal, setShowRegistrationModal] = useState(false)
 
     // Transaction details modal
     const [showTransactionModal, setShowTransactionModal] = useState(false)
@@ -238,6 +240,19 @@ export default function ViewPreRegistration() {
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || t({ en: 'Failed to update address', bn: 'ঠিকানা আপডেট করতে ব্যর্থ' }))
+        }
+    })
+
+    // Pre-registration details mutation
+    const updatePreRegDetailsMutation = useMutation({
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/pilgrim/update-pre-registration`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
+            setShowRegistrationModal(false)
+            toast.success(t({ en: 'Pre-registration details updated successfully', bn: 'প্রি-রেজিস্ট্রেশন বিস্তারিত সফলভাবে আপডেট করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to update pre-registration details', bn: 'প্রি-রেজিস্ট্রেশন বিস্তারিত আপডেট করতে ব্যর্থ' }))
         }
     })
 
@@ -395,9 +410,6 @@ export default function ViewPreRegistration() {
                         </p>
                     </div>
                     <div className="text-right space-y-2">
-                        <Badge className={`capitalize text-xs px-3 py-1 ${getStatusColor(preRegistration.attributes.status)}`}>
-                            {preRegistration.attributes.status}
-                        </Badge>
                         {preRegistration.relationships?.groupLeader?.attributes?.groupName && (
                             <div className="flex items-center gap-2 text-sm">
                                 <Users className="h-4 w-4 text-muted-foreground" />
@@ -477,6 +489,9 @@ export default function ViewPreRegistration() {
                                             {user.gender}
                                         </Badge>
                                     )}
+                                    <Badge className={`capitalize text-xs px-3 py-1 ${getStatusColor(preRegistration.attributes.status)}`}>
+                                        {preRegistration.attributes.status}
+                                    </Badge>
                                 </div>
                             </div>
                         </div>
@@ -488,6 +503,7 @@ export default function ViewPreRegistration() {
                     <TabsList>
                         <TabsTrigger value="profile">{t({ en: 'Profile', bn: 'প্রোফাইল' })}</TabsTrigger>
                         <TabsTrigger value="address">{t({ en: 'Address', bn: 'ঠিকানা' })}</TabsTrigger>
+                        <TabsTrigger value="registration">{t({ en: 'Registration Details', bn: 'রেজিস্ট্রেশন বিস্তারিত' })}</TabsTrigger>
                         <TabsTrigger value="transactions">{t({ en: 'Transactions', bn: 'লেনদেন' })}</TabsTrigger>
                     </TabsList>
 
@@ -872,6 +888,108 @@ export default function ViewPreRegistration() {
                         </Card>
                     </TabsContent>
 
+                    <TabsContent value="registration">
+                        <div className="grid gap-4 lg:grid-cols-2">
+                            {/* Pre-registration Details */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                            <FileText className="h-4 w-4 text-primary" />
+                                            {t({ en: "Pre-registration Details", bn: "প্রি-রেজিস্ট্রেশন বিস্তারিত" })}
+                                        </CardTitle>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setShowRegistrationModal(true)}
+                                            className="h-8 gap-1"
+                                        >
+                                            <Edit className="h-3.5 w-3.5" />
+                                            {t({ en: "Edit", bn: "এডিট" })}
+                                        </Button>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Bank", bn: "ব্যাংক" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.relationships?.bank?.attributes?.name || '-'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Serial No", bn: "সিরিয়াল নং" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.attributes?.serialNo || '-'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Tracking No", bn: "ট্র্যাকিং নং" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.attributes?.trackingNo || '-'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Bank Voucher No", bn: "ব্যাংক ভাউচার নং" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.attributes?.bankVoucherNo || '-'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Voucher Name", bn: "ভাউচার নাম" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.attributes?.voucherName || '-'}
+                                            </p>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                {t({ en: "Date", bn: "তারিখ" })}
+                                            </Label>
+                                            <p className="text-sm font-medium">
+                                                {preRegistration?.attributes?.date ? new Date(preRegistration.attributes.date).toLocaleDateString() : '-'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Registration Details - Placeholder for future */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                        <Check className="h-4 w-4 text-primary" />
+                                        {t({ en: "Registration Details", bn: "রেজিস্ট্রেশন বিস্তারিত" })}
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="flex items-center justify-center h-32 text-muted-foreground">
+                                        <div className="text-center">
+                                            <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                            <p className="text-sm">
+                                                {t({ en: "Registration details will be available here", bn: "রেজিস্ট্রেশন বিস্তারিত এখানে উপলব্ধ হবে" })}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
+
                     <TabsContent value="transactions">
                         <Card>
                             <CardHeader>
@@ -1063,6 +1181,15 @@ export default function ViewPreRegistration() {
                     addressData={{ presentAddress, permanentAddress }}
                     onSubmit={(data) => updateAddressMutation.mutate(data)}
                     isSubmitting={updateAddressMutation.isPending}
+                />
+
+                {/* Registration Details Edit Modal */}
+                <EditRegistrationModal
+                    open={showRegistrationModal}
+                    onOpenChange={setShowRegistrationModal}
+                    registrationData={preRegistration}
+                    onSubmit={(data) => updatePreRegDetailsMutation.mutate(data)}
+                    isSubmitting={updatePreRegDetailsMutation.isPending}
                 />
             </div>
         </DashboardLayout>
