@@ -913,15 +913,6 @@ export default function ViewPreRegistration() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="space-y-1">
                                             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Bank", bn: "ব্যাংক" })}
-                                            </Label>
-                                            <p className="text-sm font-medium">
-                                                {preRegistration?.relationships?.bank?.attributes?.name || '-'}
-                                            </p>
-                                        </div>
-
-                                        <div className="space-y-1">
-                                            <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                                                 {t({ en: "Serial No", bn: "সিরিয়াল নং" })}
                                             </Label>
                                             <p className="text-sm font-medium">
@@ -940,7 +931,7 @@ export default function ViewPreRegistration() {
 
                                         <div className="space-y-1">
                                             <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                                {t({ en: "Bank Voucher No", bn: "ব্যাংক ভাউচার নং" })}
+                                                {t({ en: "Voucher No", bn: "ভাউচার নং" })}
                                             </Label>
                                             <p className="text-sm font-medium">
                                                 {preRegistration?.attributes?.bankVoucherNo || '-'}

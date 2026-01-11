@@ -17,7 +17,7 @@ import AppPagination from '@/components/app/AppPagination'
 export function TransactionModal({ open, onOpenChange, bank }) {
     const { t } = useTranslation()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
 
     const { data, isLoading } = useQuery({
         queryKey: ['bank-transactions', bank?.id, currentPage, rowsPerPage],
@@ -66,11 +66,10 @@ export function TransactionModal({ open, onOpenChange, bank }) {
                                             </TableCell>
                                             <TableCell>{transaction.attributes.title}</TableCell>
                                             <TableCell>
-                                                <span className={`px-2 py-1 rounded text-xs ${
-                                                    transaction.attributes.type === 'income'
+                                                <span className={`px-2 py-1 rounded text-xs ${transaction.attributes.type === 'income'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
-                                                }`}>
+                                                    }`}>
                                                     {transaction.attributes.type}
                                                 </span>
                                             </TableCell>

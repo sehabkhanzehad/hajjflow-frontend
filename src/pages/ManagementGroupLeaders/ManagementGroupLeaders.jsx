@@ -18,7 +18,7 @@ export default function ManagementGroupLeaders() {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingGroupLeader, setEditingGroupLeader] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [groupLeaderToDelete, setGroupLeaderToDelete] = useState(null)
 

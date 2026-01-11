@@ -102,7 +102,7 @@ export default function ViewUmrahPilgrim() {
 
     // Transaction pagination
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [discountAmount, setDiscountAmount] = useState('')
 
     const { data: umrah, isLoading, error } = useQuery({
@@ -400,7 +400,7 @@ export default function ViewUmrahPilgrim() {
                             <User className="h-5 w-5 text-primary" />
                             {t({ en: "Profile", bn: "প্রোফাইল" })}
                         </CardTitle>
-                        
+
                         {/* Status action menu - Hide if completed and no passport */}
                         {!(umrah.attributes.status === 'completed' && !passport) && (
                             <DropdownMenu>
@@ -542,247 +542,247 @@ export default function ViewUmrahPilgrim() {
                     </TabsList>
                     <TabsContent value="profile">
                         <div className="grid gap-4 lg:grid-cols-2">
-                    {/* Personal & Family Information Combined */}
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                    <User className="h-4 w-4 text-primary" />
-                                    {t({ en: "Personal Information", bn: "পার্সোনাল তথ্য" })}
-                                </CardTitle>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setShowPersonalInfoModal(true)}
-                                    className="h-8 gap-1"
-                                >
-                                    <Edit className="h-3.5 w-3.5" />
-                                    {t({ en: "Edit", bn: "এডিট" })}
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Personal Details */}
-                            <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                                    {t({ en: "Personal Details", bn: "ব্যক্তিগত তথ্য" })}
-                                </h4>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                    <div>
-                                        <p className="text-[10px] text-muted-foreground">{t({ en: "First Name", bn: "প্রথম নাম" })}</p>
-                                        <p className="text-sm font-medium">{user?.firstName || t({ en: "N/A", bn: "নেই" })}</p>
-                                        {user?.firstNameBangla && (
-                                            <p className="text-xs text-muted-foreground">{user.firstNameBangla}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Last Name", bn: "শেষ নাম" })}</p>
-                                        <p className="text-sm font-medium">{user?.lastName || t({ en: "N/A", bn: "নেই" })}</p>
-                                        {user?.lastNameBangla && (
-                                            <p className="text-xs text-muted-foreground">{user.lastNameBangla}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Date of Birth", bn: "জন্ম তারিখ" })}</p>
-                                        <p className="text-sm font-medium">
-                                            {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-US', {
-                                                year: 'numeric', month: 'short', day: 'numeric'
-                                            }) : t({ en: "N/A", bn: "নেই" })}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Marital Status", bn: "বৈবাহিক অবস্থা" })}</p>
-                                        <p className="text-sm font-medium">{user?.isMarried ? t({ en: "Married", bn: "বিবাহিত" }) : t({ en: "Single", bn: "অবিবাহিত" })}</p>
-                                    </div>
-                                    {user?.occupation && (
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Occupation", bn: "পেশা" })}</p>
-                                            <p className="text-sm font-medium">{user.occupation}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            {/* Family Details */}
-                            <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                                    {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
-                                </h4>
-                                {!user?.fatherName && !user?.motherName && !user?.spouseName ? (
-                                    <div className="text-center py-3 text-muted-foreground">
-                                        <p className="text-xs">{t({ en: "No family information available", bn: "কোন পারিবারিক তথ্য নেই" })}</p>
-                                    </div>
-                                ) : (
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                        {user?.fatherName && (
-                                            <div>
-                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "পিতার নাম" })}</p>
-                                                <p className="text-sm font-medium">{user.fatherName}</p>
-                                                {user?.fatherNameBangla && (
-                                                    <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {user?.motherName && (
-                                            <div>
-                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
-                                                <p className="text-sm font-medium">{user.motherName}</p>
-                                                {user?.motherNameBangla && (
-                                                    <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                        {user?.spouseName && (
-                                            <div>
-                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Spouse Name", bn: "স্বামী/স্ত্রীর নাম" })}</p>
-                                                <p className="text-sm font-medium">{user.spouseName}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Identification & Passport Combined */}
-                    <Card>
-                        <CardHeader>
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                                    <IdCard className="h-4 w-4 text-primary" />
-                                    {t({ en: "Identification & Documents", bn: "আইডেন্টিটিফিকেশন ও ডকুমেন্টস" })}
-                                </CardTitle>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setShowContactInfoModal(true)}
-                                    className="h-8 gap-1"
-                                >
-                                    <Edit className="h-3.5 w-3.5" />
-                                    {t({ en: "Edit", bn: "এডিট" })}
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* ID Documents */}
-                            <div>
-                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                                    {t({ en: "Identity", bn: "আইডেন্টিটি" })}
-                                </h4>
-                                <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                    <div>
-                                        <p className="text-[10px] text-muted-foreground">National ID (NID)</p>
-                                        <p className="text-sm font-medium">{user?.nid || 'N/A'}</p>
-                                    </div>
-                                    {user?.birthCertificateNumber && (
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">Birth Certificate</p>
-                                            <p className="text-sm font-medium">{user.birthCertificateNumber}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <Separator />
-
-                            {/* Passport Information */}
-                            {passport ? (
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                                            {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
-                                        </h4>
+                            {/* Personal & Family Information Combined */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                            <User className="h-4 w-4 text-primary" />
+                                            {t({ en: "Personal Information", bn: "পার্সোনাল তথ্য" })}
+                                        </CardTitle>
                                         <Button
                                             variant="ghost"
                                             size="sm"
-                                            onClick={handleEditPassport}
-                                            className="h-7 gap-1"
+                                            onClick={() => setShowPersonalInfoModal(true)}
+                                            className="h-8 gap-1"
                                         >
-                                            <Edit className="h-3 w-3" />
+                                            <Edit className="h-3.5 w-3.5" />
                                             {t({ en: "Edit", bn: "এডিট" })}
                                         </Button>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Passport Number", bn: "পাসপোর্ট নম্বর" })}</p>
-                                            <p className="text-sm font-medium">{passport.passportNumber}</p>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {/* Personal Details */}
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                            {t({ en: "Personal Details", bn: "ব্যক্তিগত তথ্য" })}
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "First Name", bn: "প্রথম নাম" })}</p>
+                                                <p className="text-sm font-medium">{user?.firstName || t({ en: "N/A", bn: "নেই" })}</p>
+                                                {user?.firstNameBangla && (
+                                                    <p className="text-xs text-muted-foreground">{user.firstNameBangla}</p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Last Name", bn: "শেষ নাম" })}</p>
+                                                <p className="text-sm font-medium">{user?.lastName || t({ en: "N/A", bn: "নেই" })}</p>
+                                                {user?.lastNameBangla && (
+                                                    <p className="text-xs text-muted-foreground">{user.lastNameBangla}</p>
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Date of Birth", bn: "জন্ম তারিখ" })}</p>
+                                                <p className="text-sm font-medium">
+                                                    {user?.dateOfBirth ? new Date(user.dateOfBirth).toLocaleDateString('en-US', {
+                                                        year: 'numeric', month: 'short', day: 'numeric'
+                                                    }) : t({ en: "N/A", bn: "নেই" })}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">{t({ en: "Marital Status", bn: "বৈবাহিক অবস্থা" })}</p>
+                                                <p className="text-sm font-medium">{user?.isMarried ? t({ en: "Married", bn: "বিবাহিত" }) : t({ en: "Single", bn: "অবিবাহিত" })}</p>
+                                            </div>
+                                            {user?.occupation && (
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Occupation", bn: "পেশা" })}</p>
+                                                    <p className="text-sm font-medium">{user.occupation}</p>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Type", bn: "টাইপ" })}</p>
-                                            <p className="text-sm font-medium capitalize">
-                                                {passport.passportType || 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Issue Date", bn: "ইস্যু ডেট" })}</p>
-                                            <p className="text-sm font-medium">
-                                                {passport.issueDate ? new Date(passport.issueDate).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric'
-                                                }) : 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] text-muted-foreground">{t({ en: "Expiry Date", bn: "এক্সপায়ারি ডেট" })}</p>
-                                            <p className={`text-sm font-medium ${passport.expiryDate && new Date(passport.expiryDate) < new Date()
-                                                ? 'text-red-600 dark:text-red-400'
-                                                : ''
-                                                }`}>
-                                                {passport.expiryDate ? new Date(passport.expiryDate).toLocaleDateString('en-US', {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric'
-                                                }) : 'N/A'}
-                                            </p>
-                                        </div>
-                                        {passport.notes && (
-                                            <div className="col-span-2">
-                                                <p className="text-[10px] text-muted-foreground">Notes</p>
-                                                <p className="text-sm font-medium">{passport.notes}</p>
+                                    </div>
+
+                                    <Separator />
+
+                                    {/* Family Details */}
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                            {t({ en: "Family Details", bn: "পারিবারিক তথ্য" })}
+                                        </h4>
+                                        {!user?.fatherName && !user?.motherName && !user?.spouseName ? (
+                                            <div className="text-center py-3 text-muted-foreground">
+                                                <p className="text-xs">{t({ en: "No family information available", bn: "কোন পারিবারিক তথ্য নেই" })}</p>
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                                {user?.fatherName && (
+                                                    <div>
+                                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Father's Name", bn: "পিতার নাম" })}</p>
+                                                        <p className="text-sm font-medium">{user.fatherName}</p>
+                                                        {user?.fatherNameBangla && (
+                                                            <p className="text-xs text-muted-foreground">{user.fatherNameBangla}</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {user?.motherName && (
+                                                    <div>
+                                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Mother's Name", bn: "মায়ের নাম" })}</p>
+                                                        <p className="text-sm font-medium">{user.motherName}</p>
+                                                        {user?.motherNameBangla && (
+                                                            <p className="text-xs text-muted-foreground">{user.motherNameBangla}</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {user?.spouseName && (
+                                                    <div>
+                                                        <p className="text-[10px] text-muted-foreground">{t({ en: "Spouse Name", bn: "স্বামী/স্ত্রীর নাম" })}</p>
+                                                        <p className="text-sm font-medium">{user.spouseName}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
-                                        {passport.filePath && (
-                                            <div className="col-span-2 pt-2">
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Identification & Passport Combined */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-base font-semibold flex items-center gap-2">
+                                            <IdCard className="h-4 w-4 text-primary" />
+                                            {t({ en: "Identification & Documents", bn: "আইডেন্টিটিফিকেশন ও ডকুমেন্টস" })}
+                                        </CardTitle>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setShowContactInfoModal(true)}
+                                            className="h-8 gap-1"
+                                        >
+                                            <Edit className="h-3.5 w-3.5" />
+                                            {t({ en: "Edit", bn: "এডিট" })}
+                                        </Button>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {/* ID Documents */}
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                            {t({ en: "Identity", bn: "আইডেন্টিটি" })}
+                                        </h4>
+                                        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                            <div>
+                                                <p className="text-[10px] text-muted-foreground">National ID (NID)</p>
+                                                <p className="text-sm font-medium">{user?.nid || 'N/A'}</p>
+                                            </div>
+                                            {user?.birthCertificateNumber && (
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">Birth Certificate</p>
+                                                    <p className="text-sm font-medium">{user.birthCertificateNumber}</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <Separator />
+
+                                    {/* Passport Information */}
+                                    {passport ? (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                                                    {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                                </h4>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={handleEditPassport}
+                                                    className="h-7 gap-1"
+                                                >
+                                                    <Edit className="h-3 w-3" />
+                                                    {t({ en: "Edit", bn: "এডিট" })}
+                                                </Button>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Passport Number", bn: "পাসপোর্ট নম্বর" })}</p>
+                                                    <p className="text-sm font-medium">{passport.passportNumber}</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Type", bn: "টাইপ" })}</p>
+                                                    <p className="text-sm font-medium capitalize">
+                                                        {passport.passportType || 'N/A'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Issue Date", bn: "ইস্যু ডেট" })}</p>
+                                                    <p className="text-sm font-medium">
+                                                        {passport.issueDate ? new Date(passport.issueDate).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        }) : 'N/A'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground">{t({ en: "Expiry Date", bn: "এক্সপায়ারি ডেট" })}</p>
+                                                    <p className={`text-sm font-medium ${passport.expiryDate && new Date(passport.expiryDate) < new Date()
+                                                        ? 'text-red-600 dark:text-red-400'
+                                                        : ''
+                                                        }`}>
+                                                        {passport.expiryDate ? new Date(passport.expiryDate).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric'
+                                                        }) : 'N/A'}
+                                                    </p>
+                                                </div>
+                                                {passport.notes && (
+                                                    <div className="col-span-2">
+                                                        <p className="text-[10px] text-muted-foreground">Notes</p>
+                                                        <p className="text-sm font-medium">{passport.notes}</p>
+                                                    </div>
+                                                )}
+                                                {passport.filePath && (
+                                                    <div className="col-span-2 pt-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={handleOpenPassportDialog}
+                                                            className="w-full"
+                                                        >
+                                                            <Image className="h-4 w-4" /> View Passport
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
+                                                {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
+                                            </h4>
+                                            <div className="text-center py-4 text-muted-foreground">
+                                                <FileText className="h-8 w-8 mx-auto mb-1 opacity-50" />
+                                                <p className="text-xs mb-3">{t({ en: "No passport information", bn: "কোন পাসপোর্ট তথ্য নেই" })}</p>
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={handleOpenPassportDialog}
-                                                    className="w-full"
+                                                    onClick={handleAddPassport}
+                                                    className="gap-2"
                                                 >
-                                                    <Image className="h-4 w-4" /> View Passport
+                                                    <Plus className="h-4 w-4" />
+                                                    {t({ en: "Add Passport", bn: "পাসপোর্ট যোগ করুন" })}
                                                 </Button>
                                             </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ) : (
-                                <div>
-                                    <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                                        {t({ en: "Passport Details", bn: "পাসপোর্টের বিস্তারিত" })}
-                                    </h4>
-                                    <div className="text-center py-4 text-muted-foreground">
-                                        <FileText className="h-8 w-8 mx-auto mb-1 opacity-50" />
-                                        <p className="text-xs mb-3">{t({ en: "No passport information", bn: "কোন পাসপোর্ট তথ্য নেই" })}</p>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleAddPassport}
-                                            className="gap-2"
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                            {t({ en: "Add Passport", bn: "পাসপোর্ট যোগ করুন" })}
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
 
-                    {/* Registration Timeline */}
-                    {/* <Card className="lg:col-span-2">
+                            {/* Registration Timeline */}
+                            {/* <Card className="lg:col-span-2">
                         <CardHeader >
                             <CardTitle className="text-base font-semibold flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-primary" />
@@ -964,122 +964,122 @@ export default function ViewUmrahPilgrim() {
                     </TabsContent>
 
                     <TabsContent value="transactions">
-                    <Card className="w-full">
-                        <CardHeader>
-                            <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center gap-2">
-                                    <Receipt className="h-5 w-5 text-primary" />
-                                    <CardTitle className="text-base font-semibold">
-                                        {t({ en: 'Transactions', bn: 'লেনদেন' })}
-                                    </CardTitle>
-                                </div>
-                                <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => navigate('/transactions')}
-                                    className="gap-2"
-                                >
-                                    {t({ en: 'View All', bn: 'সব দেখুন' })}
-                                </Button>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {isTransactionsLoading ? (
-                                <div className="space-y-2">
-                                    <Skeleton className="h-12 w-full" />
-                                    <Skeleton className="h-12 w-full" />
-                                    <Skeleton className="h-12 w-full" />
-                                </div>
-                            ) : transactions.length === 0 ? (
-                                <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/10">
-                                    <Receipt className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                    <p className="text-sm font-medium">{t({ en: 'No transactions found', bn: 'কোনো লেনদেন পাওয়া যায়নি' })}</p>
-                                    <p className="text-xs mt-1">{t({ en: 'This pilgrim has no transaction history', bn: 'এই পিলগ্রিমের কোনো লেনদেন ইতিহাস নেই' })}</p>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="rounded-lg border bg-card overflow-hidden shadow-sm">
-                                        <Table>
-                                            <TableHeader className="bg-muted/50">
-                                                <TableRow className="hover:bg-transparent border-b">
-                                                    <TableHead className="font-semibold">Date</TableHead>
-                                                    <TableHead className="font-semibold">Title</TableHead>
-                                                    <TableHead className="font-semibold">Type</TableHead>
-                                                    <TableHead className="font-semibold">Voucher</TableHead>
-                                                    <TableHead className="text-right font-semibold">Amount</TableHead>
-                                                    <TableHead className="text-right font-semibold w-24">Actions</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {transactions.map((tx) => (
-                                                    <TableRow key={tx.id} className="hover:bg-muted/30 transition-colors">
-                                                        <TableCell className="font-medium text-sm">
-                                                            {new Date(tx.attributes.date || tx.attributes.createdAt).toLocaleDateString('en-GB')}
-                                                        </TableCell>
-                                                        <TableCell className="font-medium text-sm">{tx.attributes.title}</TableCell>
-                                                        <TableCell>
-                                                            <Badge 
-                                                                variant="outline" 
-                                                                className={`capitalize font-medium ${tx.attributes.type === 'income'
-                                                                    ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
-                                                                    : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
-                                                                }`}
-                                                            >
-                                                                {tx.attributes.type === 'expense' ? 'Refund' : 'Income'}
-                                                            </Badge>
-                                                        </TableCell>
-                                                        <TableCell className="text-sm text-muted-foreground">
-                                                            {tx.attributes.voucherNo || '-'}
-                                                        </TableCell>
-                                                        <TableCell className="text-right">
-                                                            <span className={`font-semibold text-sm ${tx.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
-                                                                {tx.attributes.type === 'income' ? '+' : '-'}৳{parseFloat(tx.attributes.amount).toFixed(2)}
-                                                            </span>
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <div className="flex items-center justify-end gap-1.5">
-                                                                <Button
-                                                                    variant="secondary"
-                                                                    size="sm"
-                                                                    className="h-8 px-3 rounded-sm"
-                                                                    onClick={() => {
-                                                                        setSelectedTransaction(tx)
-                                                                        setShowTransactionModal(true)
-                                                                    }}
-                                                                    title="View Details"
-                                                                >
-                                                                    <Eye className="h-3.5 w-3.5" />
-                                                                </Button>
-                                                                <Button
-                                                                    variant="secondary"
-                                                                    size="sm"
-                                                                    className="h-8 px-3 rounded-sm"
-                                                                    onClick={() => toast.info('Print feature coming soon!')}
-                                                                    title="Print Receipt"
-                                                                >
-                                                                    <Printer className="h-3.5 w-3.5" />
-                                                                </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
+                        <Card className="w-full">
+                            <CardHeader>
+                                <div className="flex items-center justify-between w-full">
+                                    <div className="flex items-center gap-2">
+                                        <Receipt className="h-5 w-5 text-primary" />
+                                        <CardTitle className="text-base font-semibold">
+                                            {t({ en: 'Transactions', bn: 'লেনদেন' })}
+                                        </CardTitle>
                                     </div>
-                                    
-                                    {transactionsMeta && (
-                                        <AppPagination
-                                            meta={transactionsMeta}
-                                            rowsPerPage={rowsPerPage}
-                                            setRowsPerPage={setRowsPerPage}
-                                            currentPage={currentPage}
-                                            setCurrentPage={setCurrentPage}
-                                        />
-                                    )}
-                                </>
-                            )}
-                        </CardContent>
-                    </Card>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => navigate('/transactions')}
+                                        className="gap-2"
+                                    >
+                                        {t({ en: 'View All', bn: 'সব দেখুন' })}
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {isTransactionsLoading ? (
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-12 w-full" />
+                                        <Skeleton className="h-12 w-full" />
+                                        <Skeleton className="h-12 w-full" />
+                                    </div>
+                                ) : transactions.length === 0 ? (
+                                    <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/10">
+                                        <Receipt className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                                        <p className="text-sm font-medium">{t({ en: 'No transactions found', bn: 'কোনো লেনদেন পাওয়া যায়নি' })}</p>
+                                        <p className="text-xs mt-1">{t({ en: 'This pilgrim has no transaction history', bn: 'এই পিলগ্রিমের কোনো লেনদেন ইতিহাস নেই' })}</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="rounded-lg border bg-card overflow-hidden shadow-sm">
+                                            <Table>
+                                                <TableHeader className="bg-muted/50">
+                                                    <TableRow className="hover:bg-transparent border-b">
+                                                        <TableHead className="font-semibold">Date</TableHead>
+                                                        <TableHead className="font-semibold">Title</TableHead>
+                                                        <TableHead className="font-semibold">Type</TableHead>
+                                                        <TableHead className="font-semibold">Voucher</TableHead>
+                                                        <TableHead className="text-right font-semibold">Amount</TableHead>
+                                                        <TableHead className="text-right font-semibold w-24">Actions</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {transactions.map((tx) => (
+                                                        <TableRow key={tx.id} className="hover:bg-muted/30 transition-colors">
+                                                            <TableCell className="font-medium text-sm">
+                                                                {new Date(tx.attributes.date || tx.attributes.createdAt).toLocaleDateString('en-GB')}
+                                                            </TableCell>
+                                                            <TableCell className="font-medium text-sm">{tx.attributes.title}</TableCell>
+                                                            <TableCell>
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className={`capitalize font-medium ${tx.attributes.type === 'income'
+                                                                        ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
+                                                                        : 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                                                        }`}
+                                                                >
+                                                                    {tx.attributes.type === 'expense' ? 'Refund' : 'Income'}
+                                                                </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="text-sm text-muted-foreground">
+                                                                {tx.attributes.voucherNo || '-'}
+                                                            </TableCell>
+                                                            <TableCell className="text-right">
+                                                                <span className={`font-semibold text-sm ${tx.attributes.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+                                                                    {tx.attributes.type === 'income' ? '+' : '-'}৳{parseFloat(tx.attributes.amount).toFixed(2)}
+                                                                </span>
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <div className="flex items-center justify-end gap-1.5">
+                                                                    <Button
+                                                                        variant="secondary"
+                                                                        size="sm"
+                                                                        className="h-8 px-3 rounded-sm"
+                                                                        onClick={() => {
+                                                                            setSelectedTransaction(tx)
+                                                                            setShowTransactionModal(true)
+                                                                        }}
+                                                                        title="View Details"
+                                                                    >
+                                                                        <Eye className="h-3.5 w-3.5" />
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="secondary"
+                                                                        size="sm"
+                                                                        className="h-8 px-3 rounded-sm"
+                                                                        onClick={() => toast.info('Print feature coming soon!')}
+                                                                        title="Print Receipt"
+                                                                    >
+                                                                        <Printer className="h-3.5 w-3.5" />
+                                                                    </Button>
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+
+                                        {transactionsMeta && (
+                                            <AppPagination
+                                                meta={transactionsMeta}
+                                                rowsPerPage={rowsPerPage}
+                                                setRowsPerPage={setRowsPerPage}
+                                                currentPage={currentPage}
+                                                setCurrentPage={setCurrentPage}
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </CardContent>
+                        </Card>
                     </TabsContent>
                 </Tabs>
             </div>
@@ -1276,8 +1276,8 @@ export default function ViewUmrahPilgrim() {
                         <Button variant="outline" onClick={() => setShowDiscountModal(false)} disabled={applyDiscountMutation.isPending}>
                             {t({ en: 'Cancel', bn: 'বাতিল' })}
                         </Button>
-                        <Button 
-                            onClick={() => applyDiscountMutation.mutate({ discount: parseFloat(discountAmount) || 0 })} 
+                        <Button
+                            onClick={() => applyDiscountMutation.mutate({ discount: parseFloat(discountAmount) || 0 })}
                             disabled={applyDiscountMutation.isPending || !discountAmount}
                         >
                             {applyDiscountMutation.isPending ? t({ en: 'Applying...', bn: 'প্রয়োগ হচ্ছে...' }) : t({ en: 'Apply Discount', bn: 'ডিসকাউন্ট প্রয়োগ করুন' })}

@@ -22,7 +22,7 @@ export default function Bills() {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingBill, setEditingBill] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [billToDelete, setBillToDelete] = useState(null)
 

@@ -28,6 +28,7 @@ import Registrations from '@/pages/Registrations/Registrations'
 import UmrahPilgrims from '@/pages/UmrahPilgrims/UmrahPilgrims'
 import CreateUmrahPilgrim from '@/pages/UmrahPilgrims/CreateUmrahPilgrim'
 import ViewUmrahPilgrim from '@/pages/UmrahPilgrims/ViewUmrahPilgrim'
+import ViewPilgrim from '@/pages/Pilgrims/ViewPilgrim'
 import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
 import Transactions from '@/pages/Transactions/Transactions'
 
@@ -71,6 +72,7 @@ function App() {
           <Route path="/umrah" element={isAuthenticated ? <UmrahPilgrims /> : <Navigate to="/" replace />} />
           <Route path="/umrah/create" element={isAuthenticated ? <CreateUmrahPilgrim /> : <Navigate to="/" replace />} />
           <Route path="/umrah/view/:id" element={isAuthenticated ? <ViewUmrahPilgrim /> : <Navigate to="/" replace />} />
+          {/* <Route path="/pilgrims/:type/:id" element={isAuthenticated ? <ViewPilgrim /> : <Navigate to="/" replace />} /> */}
           <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/" replace />} />
           <Route path="/settings/*" element={isAuthenticated ? <Settings /> : <Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />

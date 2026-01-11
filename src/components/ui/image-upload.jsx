@@ -22,6 +22,11 @@ const ImageUpload = React.forwardRef(
         const [isDragging, setIsDragging] = useState(false);
         const fileInputRef = useRef(null);
 
+        // Update preview when value changes
+        React.useEffect(() => {
+            setPreview(value || null);
+        }, [value]);
+
         const handleFileChange = (file) => {
             if (!file) return;
 

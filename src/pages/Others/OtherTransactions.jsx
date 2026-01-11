@@ -37,7 +37,7 @@ export default function OtherTransactions() {
     const { t } = useTranslation()
     const { id } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(15)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -157,11 +157,10 @@ export default function OtherTransactions() {
                                             </TableCell>
                                             <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                                    transaction?.attributes?.type === 'income'
+                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
                                                         ? 'bg-green-100 text-green-800'
                                                         : 'bg-red-100 text-red-800'
-                                                }`}>
+                                                    }`}>
                                                     {transaction?.attributes?.type === 'income' ? 'Deposit' : 'Expense'}
                                                 </span>
                                             </TableCell>

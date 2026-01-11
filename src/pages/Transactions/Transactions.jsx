@@ -22,7 +22,7 @@ import {
 export default function Transactions() {
     const { t } = useTranslation()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(15)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [isModalOpen, setIsModalOpen] = useState(false)
 
     const { data, isLoading } = useQuery({
@@ -112,8 +112,8 @@ export default function Transactions() {
                                             </TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction.attributes.type === 'income'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {transaction.attributes.type}
                                                 </span>

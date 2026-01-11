@@ -30,7 +30,6 @@ import { useI18n } from '@/contexts/I18nContext'
 import api from '@/lib/api'
 
 const registrationSchema = z.object({
-    bank_id: z.string().min(1, "Bank is required"),
     serial_no: z.string().min(1, "Serial number is required"),
     tracking_no: z.string().min(1, "Tracking number is required"),
     bank_voucher_no: z.string().min(1, "Bank voucher number is required"),
@@ -41,16 +40,9 @@ const registrationSchema = z.object({
 export function EditRegistrationModal({ open, onOpenChange, registrationData, onSubmit, isSubmitting }) {
     const { t } = useI18n()
 
-    // Fetch banks for dropdown
-    const { data: banks } = useQuery({
-        queryKey: ['pre-registration-banks'],
-        queryFn: () => api.get('/pre-registrations/banks').then(res => res.data.data),
-    })
-
     const form = useForm({
         resolver: zodResolver(registrationSchema),
         defaultValues: {
-            bank_id: '',
             serial_no: '',
             tracking_no: '',
             bank_voucher_no: '',
@@ -62,7 +54,6 @@ export function EditRegistrationModal({ open, onOpenChange, registrationData, on
     useEffect(() => {
         if (registrationData && open) {
             form.reset({
-                bank_id: registrationData.relationships?.bank?.id?.toString() || '',
                 serial_no: registrationData.attributes?.serialNo || '',
                 tracking_no: registrationData.attributes?.trackingNo || '',
                 bank_voucher_no: registrationData.attributes?.bankVoucherNo || '',
@@ -88,31 +79,6 @@ export function EditRegistrationModal({ open, onOpenChange, registrationData, on
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="bank_id"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{t({ en: 'Bank', bn: 'ব্যাংক' })} *</FormLabel>
-                                        <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl>
-                                                <SelectTrigger className="w-full">
-                                                    <SelectValue placeholder={t({ en: 'Select bank', bn: 'ব্যাংক নির্বাচন করুন' })} />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                {banks?.map((bank) => (
-                                                    <SelectItem key={bank.id} value={bank.id.toString()}>
-                                                        {bank.attributes.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
                             <FormField
                                 control={form.control}
                                 name="serial_no"
@@ -146,7 +112,7 @@ export function EditRegistrationModal({ open, onOpenChange, registrationData, on
                                 name="bank_voucher_no"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t({ en: 'Bank Voucher No', bn: 'ব্যাংক ভাউচার নং' })} *</FormLabel>
+                                        <FormLabel>{t({ en: 'Voucher No', bn: 'ভাউচার নং' })} *</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>

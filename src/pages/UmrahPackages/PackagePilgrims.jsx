@@ -22,7 +22,7 @@ export default function PackagePilgrims() {
     const { id } = useParams()
     const queryClient = useQueryClient()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [umrahToDelete, setUmrahToDelete] = useState(null)
     const [showCollectionModal, setShowCollectionModal] = useState(false)
@@ -92,7 +92,7 @@ export default function PackagePilgrims() {
             ]}
         >
             <div className="flex flex-col h-full gap-4">
-             
+
                 {/* Pilgrims Table */}
                 <div className="flex items-end justify-between">
                     <div>
@@ -110,7 +110,7 @@ export default function PackagePilgrims() {
                         </Button>
                     </div>
                 </div>
-             
+
                 {/* Package Info */}
                 {packageInfo && (
                     <Card className="p-4">

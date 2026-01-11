@@ -28,7 +28,7 @@ const AppPagination = ({ meta, rowsPerPage, setRowsPerPage, currentPage, setCurr
             <SelectContent side="top">
               {(meta?.per_page_options && meta.per_page_options.length > 0
                 ? meta.per_page_options
-                : [5, 10, 15, 20]
+                : [25, 50, 75, 100]
               ).map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}

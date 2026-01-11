@@ -19,7 +19,7 @@ export default function UmrahPilgrims() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [umrahToDelete, setUmrahToDelete] = useState(null)
 
@@ -53,6 +53,7 @@ export default function UmrahPilgrims() {
     })
 
     const handleView = (umrah) => {
+        // navigate(`/pilgrims/umrah/${umrah.id}`)
         navigate(`/umrah/view/${umrah.id}`)
     }
 

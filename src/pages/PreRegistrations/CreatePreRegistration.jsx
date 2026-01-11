@@ -24,7 +24,6 @@ import { ChevronLeft, Upload } from 'lucide-react'
 const preRegistrationSchema = z.object({
     group_leader_id: z.string().min(1, "Group leader is required"),
     status: z.enum(['active', 'pending']),
-    bank_id: z.string().optional(),
     serial_no: z.string().optional(),
     tracking_no: z.string().optional(),
     bank_voucher_no: z.string().optional(),
@@ -92,13 +91,6 @@ const preRegistrationSchema = z.object({
     // Status-based validation - required when status is 'active'
     console.log('Superrefine data:', data);
     if (data.status === 'active') {
-        if (!data.bank_id || data.bank_id.length === 0) {
-            ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Bank is required when status is active",
-                path: ["bank_id"],
-            });
-        }
         if (!data.serial_no || data.serial_no.length === 0) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
@@ -285,15 +277,6 @@ export default function CreatePreRegistration() {
         enabled: true
     })
 
-    const { data: banks } = useQuery({
-        queryKey: ['pre-registrations-banks'],
-        queryFn: async () => {
-            const response = await api.get('/pre-registrations/banks')
-            return response.data.data
-        },
-        enabled: true
-    })
-
     const { data: pilgrims } = useQuery({
         queryKey: ['pre-registrations-pilgrims'],
         queryFn: async () => {
@@ -308,7 +291,6 @@ export default function CreatePreRegistration() {
         defaultValues: {
             group_leader_id: '',
             status: 'active',
-            bank_id: '',
             serial_no: '',
             tracking_no: '',
             bank_voucher_no: '',
@@ -386,7 +368,6 @@ export default function CreatePreRegistration() {
             formData.append('status', data.status)
 
             if (data.status === 'active') {
-                formData.append('bank_id', data.bank_id)
                 formData.append('serial_no', data.serial_no)
                 formData.append('tracking_no', data.tracking_no)
                 formData.append('bank_voucher_no', data.bank_voucher_no)
@@ -613,31 +594,6 @@ export default function CreatePreRegistration() {
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <FormField
                                                 control={form.control}
-                                                name="bank_id"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>{t({ en: 'Bank *', bn: 'ব্যাংক *' })}</FormLabel>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <FormControl>
-                                                                <SelectTrigger className="w-full">
-                                                                    <SelectValue placeholder={t({ en: 'Select bank', bn: 'ব্যাংক নির্বাচন করুন' })} />
-                                                                </SelectTrigger>
-                                                            </FormControl>
-                                                            <SelectContent>
-                                                                {banks?.map((bank) => (
-                                                                    <SelectItem key={bank.id} value={bank.id.toString()}>
-                                                                        {bank.attributes.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
                                                 name="serial_no"
                                                 render={({ field }) => (
                                                     <FormItem>
@@ -658,6 +614,19 @@ export default function CreatePreRegistration() {
                                                         <FormLabel>{t({ en: 'Tracking No *', bn: 'ট্র্যাকিং নং *' })}</FormLabel>
                                                         <FormControl>
                                                             <Input {...field} placeholder={t({ en: 'Enter tracking number', bn: 'ট্র্যাকিং নং লিখুন' })} />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                             <FormField
+                                                control={form.control}
+                                                name="date"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>{t({ en: 'Date *', bn: 'তারিখ *' })}</FormLabel>
+                                                        <FormControl>
+                                                            <Input {...field} type="date" />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -692,21 +661,7 @@ export default function CreatePreRegistration() {
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
-                                            />
-
-                                            <FormField
-                                                control={form.control}
-                                                name="date"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>{t({ en: 'Date *', bn: 'তারিখ *' })}</FormLabel>
-                                                        <FormControl>
-                                                            <Input {...field} type="date" />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+                                            />                                          
                                         </div>
                                     </>
                                 )}

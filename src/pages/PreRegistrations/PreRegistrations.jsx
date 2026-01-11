@@ -19,7 +19,7 @@ export default function PreRegistrations() {
     const navigate = useNavigate()
     const queryClient = useQueryClient()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [preRegistrationToDelete, setPreRegistrationToDelete] = useState(null)
 
@@ -58,7 +58,8 @@ export default function PreRegistrations() {
     }
 
     const handleView = (preRegistration) => {
-        console.log('handleView called with:', preRegistration);
+
+        // navigate(`/pilgrims/pre-registration/${preRegistration.id}`)
         navigate(`/pre-registrations/view/${preRegistration.id}`)
     }
 

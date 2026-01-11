@@ -37,7 +37,7 @@ export default function LoanTransactions() {
     const { t } = useTranslation()
     const { id } = useParams()
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(15)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [selectedTransaction, setSelectedTransaction] = useState(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -142,10 +142,10 @@ export default function LoanTransactions() {
                                                 {loanData.data.relationships.loanable.attributes.firstName} {loanData.data.relationships.loanable.attributes.lastName || ''}
                                             </span>
                                             <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${loanData.data.attributes.status === 'active'
-                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                    : loanData.data.attributes.status === 'completed'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : loanData.data.attributes.status === 'completed'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
                                                 }`}>
                                                 {loanData.data.attributes.status.charAt(0).toUpperCase() + loanData.data.attributes.status.slice(1)}
                                             </div>
@@ -211,8 +211,8 @@ export default function LoanTransactions() {
                                             <TableCell>{transaction?.attributes?.voucherNo || 'N/A'}</TableCell>
                                             <TableCell>
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${transaction?.attributes?.type === 'income'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
                                                     }`}>
                                                     {transaction?.attributes?.type ? (transaction.attributes.type.charAt(0).toUpperCase() + transaction.attributes.type.slice(1)) : 'Unknown'}
                                                 </span>

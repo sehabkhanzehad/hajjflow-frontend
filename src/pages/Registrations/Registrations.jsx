@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -12,15 +13,18 @@ import AppDeleteAlert from '@/components/app/AppDeleteAlert'
 import PageHeading from '@/components/PageHeading'
 import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, FileText } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Registrations() {
+    const { t } = useTranslation();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingRegistration, setEditingRegistration] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [registrationToDelete, setRegistrationToDelete] = useState(null)
+    const navigate = useNavigate()
 
     const { data: preRegistrations } = useQuery({
         queryKey: ['registration-pre-registrations'],
@@ -66,6 +70,7 @@ export default function Registrations() {
         mutationFn: (data) => api.post('/registrations', data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['registrations'] })
+            queryClient.invalidateQueries({ queryKey: ['registration-pre-registrations'] })
             toast.success('Registration created successfully')
             setDialogOpen(false)
             setEditingRegistration(null)
@@ -119,9 +124,21 @@ export default function Registrations() {
         setOpenDeleteDialog(true)
     }
 
+    const confirmDelete = () => {
+        if (registrationToDelete) {
+            deleteMutation.mutate(registrationToDelete.id)
+        }
+    }
+
     const openCreateDialog = () => {
         setEditingRegistration(null)
         setDialogOpen(true)
+    }
+
+
+    const handleView = (id) => {
+        // navigate(`/pilgrims/pre-registration/${preRegistration.id}`)
+        navigate(`/pre-registrations/view/${id}`)
     }
 
     const isSubmitting = createMutation.isPending || updateMutation.isPending
@@ -148,6 +165,7 @@ export default function Registrations() {
                             registrations={registrations}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onView={handleView}
                         />
                     ) : (
                         <EmptyComponent

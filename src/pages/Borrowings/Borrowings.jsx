@@ -20,7 +20,7 @@ export default function Borrowings() {
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingBorrowing, setEditingBorrowing] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
-    const [rowsPerPage, setRowsPerPage] = useState(10)
+    const [rowsPerPage, setRowsPerPage] = useState(25)
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
     const [borrowingToDelete, setBorrowingToDelete] = useState(null)
 
