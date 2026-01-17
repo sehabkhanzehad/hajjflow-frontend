@@ -52,21 +52,19 @@ export function AppSidebar({ ...props }) {
 
   const management = [
     {
-      title: t('app.sidebar.options.groupLeader'),
-      url: "/group-leaders",
-      icon: Users,
-      items: [],
-    },
-    {
       title: t('app.sidebar.options.hajj'),
       url: "/pilgrims",
       icon: BookOpen,
       items: [
         {
+          title: t('app.sidebar.options.groupLeader'),
+          url: "/group-leaders",
+       },
+        {
           title: t('app.sidebar.options.preRegistration'),
           url: "/pre-registrations",
         },
-        {
+        { 
           title: t('app.sidebar.options.registration'),
           url: "/registrations",
         },

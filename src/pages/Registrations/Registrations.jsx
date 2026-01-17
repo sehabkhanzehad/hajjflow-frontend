@@ -148,7 +148,7 @@ export default function Registrations() {
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
-                        title="Registrations"
+                        title={`Registrations (${meta?.total || 0})`}
                         description="Manage pilgrim registrations for packages"
                     />
                     <Button variant="outline" onClick={openCreateDialog} className="gap-2">

@@ -72,7 +72,7 @@ export default function PreRegistrations() {
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
-                        title={t('app.pre-registrations.title')}
+                        title={t('app.pre-registrations.title') + ` (${meta?.total || 0})`}
                         description={t('app.pre-registrations.description')}
                     />
                     <Button variant="outline" onClick={openCreateDialog} className="gap-2">

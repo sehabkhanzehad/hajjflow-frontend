@@ -6,46 +6,50 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { EllipsisVertical } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export function ManagementGroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
+export function ManagementGroupLeaderTable({ groupLeaders }) {
     return (
         <Table>
             <TableHeader>
                 <TableRow>
+                    <TableHead>Leader Info</TableHead>
                     <TableHead>Group Name</TableHead>
-                    <TableHead>Leader Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Pilgrim Required</TableHead>
+                    <TableHead className="text-center">Pre Reg</TableHead>
+                    <TableHead className="text-center">Registration</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
                 {groupLeaders?.map((groupLeader) => (
                     <TableRow key={groupLeader.id}>
-                        <TableCell>{groupLeader.attributes.groupName}</TableCell>
                         <TableCell>
-                            {groupLeader.relationships?.user?.attributes?.firstName} {groupLeader.relationships?.user?.attributes?.lastName}
+                            <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={groupLeader.relationships?.user?.attributes?.avatar} />
+                                    <AvatarFallback>
+                                        {groupLeader.relationships?.user?.attributes?.firstName?.[0] || ''}
+                                        {groupLeader.relationships?.user?.attributes?.lastName?.[0] || ''}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <div className="font-medium">
+                                        {groupLeader.relationships?.user?.attributes?.firstName} {groupLeader.relationships?.user?.attributes?.lastName}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        {groupLeader.relationships?.user?.attributes?.phone || '-'}
+                                    </div>
+                                </div>
+                            </div>
                         </TableCell>
-                        <TableCell>{groupLeader.relationships?.user?.attributes?.email}</TableCell>
-                        <TableCell>{groupLeader.relationships?.user?.attributes?.phone}</TableCell>
-                        <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                                groupLeader.attributes.pilgrimRequired
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : 'bg-gray-100 text-gray-800'
-                            }`}>
-                                {groupLeader.attributes.pilgrimRequired ? 'Required' : 'Optional'}
-                            </span>
+                        <TableCell className="font-medium">
+                            {groupLeader.attributes.groupName}
+                        </TableCell>
+                        <TableCell className="text-center font-semibold">
+                            {groupLeader.attributes.preRegistrationsCount || 0}
+                        </TableCell>
+                        <TableCell className="text-center font-semibold">
+                            {groupLeader.attributes.registrationsCount || 0}
                         </TableCell>
                         <TableCell>
                             <span className={`px-2 py-1 rounded-full text-xs ${
@@ -55,26 +59,6 @@ export function ManagementGroupLeaderTable({ groupLeaders, onEdit, onDelete }) {
                             }`}>
                                 {groupLeader.attributes.status ? 'Active' : 'Inactive'}
                             </span>
-                        </TableCell>
-                        <TableCell>
-                            <div className="flex items-center justify-end">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
-                                            <EllipsisVertical size={15} />
-                                        </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => onEdit(groupLeader)}>
-                                            Edit
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => onDelete(groupLeader)} className="text-destructive">
-                                            Delete
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
                         </TableCell>
                     </TableRow>
                 ))}
