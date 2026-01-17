@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import api from '@/lib/api'
@@ -14,6 +16,8 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Plus, Package } from 'lucide-react'
 
 export default function HajjPackages() {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
     const queryClient = useQueryClient()
     const [dialogOpen, setDialogOpen] = useState(false)
     const [editingPackage, setEditingPackage] = useState(null)
@@ -103,17 +107,23 @@ export default function HajjPackages() {
     const isSubmitting = createMutation.isPending || updateMutation.isPending
 
     return (
-        <DashboardLayout>
+        <DashboardLayout
+            breadcrumbs={[
+                { type: 'link', text: t('app.home'), href: '/' },
+                { type: 'page', text: 'Hajj Packages' },
+            ]}>
             <div className="flex flex-col h-full gap-4">
                 <div className="flex items-end justify-between">
                     <PageHeading
                         title="Hajj Packages"
                         description="Manage Hajj packages for pilgrims"
                     />
-                    <Button variant="outline" onClick={openCreateDialog} className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add Hajj Package
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={openCreateDialog} className="gap-2">
+                            <Plus className="h-4 w-4" />
+                            Add Hajj Package
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="flex-1">

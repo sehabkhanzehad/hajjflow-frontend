@@ -54,8 +54,8 @@ export function PackageForm({ open, onOpenChange, editingPackage, onSubmit, isSu
         if (editingPackage) {
             form.reset({
                 name: editingPackage.attributes.name || '',
-                start_date: editingPackage.attributes.start_date || '',
-                end_date: editingPackage.attributes.end_date || '',
+                start_date: editingPackage.attributes.start_date ? new Date(editingPackage.attributes.start_date).toISOString().split('T')[0] : '',
+                end_date: editingPackage.attributes.end_date ? new Date(editingPackage.attributes.end_date).toISOString().split('T')[0] : '',
                 duration_days: editingPackage.attributes.duration_days?.toString() || '',
                 price: editingPackage.attributes.price?.toString() || '',
                 description: editingPackage.attributes.description || '',
