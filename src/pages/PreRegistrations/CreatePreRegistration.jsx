@@ -524,9 +524,53 @@ export default function CreatePreRegistration() {
         form.setValue('pilgrim_type', value)
         if (value === 'existing') {
             form.setValue('pilgrim_id', '')
+            form.setValue('new_pilgrim', undefined)
             setSelectedPilgrim(null)
             setAvailablePassports([])
         } else if (value === 'new') {
+            form.setValue('pilgrim_id', '')
+            form.setValue('new_pilgrim', {
+                avatar: null,
+                first_name: '',
+                first_name_bangla: '',
+                last_name: '',
+                last_name_bangla: '',
+                mother_name: '',
+                mother_name_bangla: '',
+                father_name: '',
+                father_name_bangla: '',
+                occupation: '',
+                spouse_name: '',
+                email: '',
+                phone: '',
+                gender: '',
+                is_married: false,
+                nid: '',
+                birth_certificate_number: '',
+                date_of_birth: '',
+                present_address: {
+                    house_no: '',
+                    road_no: '',
+                    village: '',
+                    post_office: '',
+                    police_station: '',
+                    district: '',
+                    division: '',
+                    postal_code: '',
+                    country: 'Bangladesh',
+                },
+                permanent_address: {
+                    house_no: '',
+                    road_no: '',
+                    village: '',
+                    post_office: '',
+                    police_station: '',
+                    district: '',
+                    division: '',
+                    postal_code: '',
+                    country: 'Bangladesh',
+                },
+            })
             // When switching to new pilgrim, if passport_type is 'existing', switch to 'new'
             const currentPassportType = form.getValues('passport_type')
             if (currentPassportType === 'existing') {
@@ -539,6 +583,20 @@ export default function CreatePreRegistration() {
     const handlePassportTypeChange = (value) => {
         setPassportType(value)
         form.setValue('passport_type', value)
+        if (value === 'existing') {
+            form.setValue('new_passport', undefined)
+        } else if (value === 'new') {
+            form.setValue('new_passport', {
+                passport_number: '',
+                issue_date: '',
+                expiry_date: '',
+                passport_type: '',
+                file: null,
+                notes: '',
+            })
+        } else if (value === 'none') {
+            form.setValue('new_passport', undefined)
+        }
     }
 
     const onSubmit = async (data) => {
