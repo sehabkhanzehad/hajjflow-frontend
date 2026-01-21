@@ -59,12 +59,12 @@ export function AppSidebar({ ...props }) {
         {
           title: t('app.sidebar.options.groupLeader'),
           url: "/group-leaders",
-       },
+        },
         {
           title: t('app.sidebar.options.preRegistration'),
           url: "/pre-registrations",
         },
-        { 
+        {
           title: t('app.sidebar.options.registration'),
           url: "/registrations",
         },
@@ -136,9 +136,18 @@ export function AppSidebar({ ...props }) {
     },
     {
       title: t('app.sidebar.options.transactions'),
-      url: "/transactions",
+      url: "/transactions/overview",
       icon: Receipt,
-      items: [],
+      items: [
+        {
+          title: "Overview",
+          url: "/transactions/overview",
+        },
+        {
+          title: "All Transactions",
+          url: "/transactions/all",
+        }
+      ],
     },
   ];
 
