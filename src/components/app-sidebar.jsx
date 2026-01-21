@@ -93,6 +93,12 @@ export function AppSidebar({ ...props }) {
 
   const accounts = [
     {
+      title: "Overview",
+      url: "/accounts/overview",
+      icon: AudioWaveform,
+      items: [],
+    },
+    {
       title: t('app.sidebar.menu.sections'),
       url: "/sections",
       icon: CreditCard,
@@ -139,10 +145,6 @@ export function AppSidebar({ ...props }) {
       url: "/transactions/overview",
       icon: Receipt,
       items: [
-        {
-          title: "Overview",
-          url: "/transactions/overview",
-        },
         {
           title: "All Transactions",
           url: "/transactions/all",
