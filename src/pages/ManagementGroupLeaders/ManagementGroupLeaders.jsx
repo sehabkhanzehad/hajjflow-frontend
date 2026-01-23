@@ -10,11 +10,13 @@ import DashboardLayout from '@/Layouts/DashboardLayout'
 import { Users, Receipt } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import GroupLeaderCollectionModal from './components/GroupLeaderCollectionModal'
+import GroupLeaderUmrahCollectionModal from './components/GroupLeaderUmrahCollectionModal'
 
 export default function ManagementGroupLeaders() {
     const [currentPage, setCurrentPage] = useState(1)
     const [rowsPerPage, setRowsPerPage] = useState(25)
     const [collectionModalOpen, setCollectionModalOpen] = useState(false)
+    const [umrahCollectionModalOpen, setUmrahCollectionModalOpen] = useState(false)
 
     const { data, isLoading } = useQuery({
         queryKey: ['management-group-leaders', currentPage, rowsPerPage],
@@ -44,13 +46,16 @@ export default function ManagementGroupLeaders() {
                         title={`Group Leaders (${meta?.total || 0})`}
                         description="Group leaders for pilgrim management"
                     />
-                    <Button
-                        onClick={handleCollection}
-                        className="flex items-center gap-2"
-                    >
-                        <Receipt className="h-4 w-4" />
-                        Collection
-                    </Button>
+
+                    <div className="flex gap-2">
+                        <Button onClick={() => setUmrahCollectionModalOpen(true)} variant="outline" className="flex items-center gap-2" >
+                            <Receipt className="h-4 w-4" /> Umrah Collection
+                        </Button>
+
+                        <Button onClick={() => setCollectionModalOpen(true)} variant="outline" className="flex items-center gap-2"  >
+                            <Receipt className="h-4 w-4" /> Hajj Collection
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="flex-1">
@@ -84,6 +89,13 @@ export default function ManagementGroupLeaders() {
                 <GroupLeaderCollectionModal
                     open={collectionModalOpen}
                     onOpenChange={setCollectionModalOpen}
+                />
+            )}
+
+            {umrahCollectionModalOpen && (
+                <GroupLeaderUmrahCollectionModal
+                    open={umrahCollectionModalOpen}
+                    onOpenChange={setUmrahCollectionModalOpen}
                 />
             )}
         </DashboardLayout>

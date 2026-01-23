@@ -47,9 +47,13 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+
+
+
           <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />} />
 
-          <Route path="/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
+          <Route path="/management/group-leaders" element={isAuthenticated ? <ManagementGroupLeaders /> : <Navigate to="/" replace />} />
+
           <Route path="/hajj-packages" element={isAuthenticated ? <HajjPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages" element={isAuthenticated ? <UmrahPackages /> : <Navigate to="/" replace />} />
           <Route path="/umrah-packages/:id/pilgrims" element={isAuthenticated ? <PackagePilgrims /> : <Navigate to="/" replace />} />

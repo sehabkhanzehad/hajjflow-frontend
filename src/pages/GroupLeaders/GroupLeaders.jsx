@@ -103,7 +103,7 @@ export default function GroupLeaders() {
     }
 
     const handleViewTransactions = (groupLeader) => {
-        navigate(`/sections/group-leaders/${groupLeader.id}/transactions`)
+        navigate(`/accounts/sections/group-leaders/${groupLeader.id}/transactions`)
     }
 
     const resetForm = () => {
