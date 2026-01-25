@@ -30,6 +30,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar'
+import { Separator } from "./ui/separator"
 
 export function AppSidebar({ ...props }) {
   const { user } = useAuth();
@@ -54,6 +55,7 @@ export function AppSidebar({ ...props }) {
     {
       title: t('app.sidebar.options.groupLeader'),
       url: "/management/group-leaders",
+      new: true,
       icon: Users,
       items: [],
     },
@@ -61,6 +63,7 @@ export function AppSidebar({ ...props }) {
       title: t('app.sidebar.options.hajj'),
       url: "/pilgrims",
       icon: BookOpen,
+      new: true,
       items: [
         {
           title: t('app.sidebar.options.preRegistration'),
@@ -122,6 +125,11 @@ export function AppSidebar({ ...props }) {
           url: "/accounts/sections/registrations",
         },
         {
+          title: 'Umrah Costs',
+          url: "/accounts/sections/umrah-costs",
+          new: true,
+        },
+        {
           title: t('app.sidebar.options.employees'),
           url: "/accounts/sections/employees",
         },
@@ -177,6 +185,7 @@ export function AppSidebar({ ...props }) {
 
       <SidebarContent>
         <NavMain items={navMain} section={t('app.sidebar.section.platform')} />
+        {/* <Separator /> */}
         <NavMain items={management} section={t('app.sidebar.section.management')} />
         <NavMain items={accounts} section={t('app.sidebar.section.accounts')} />
         {/* <NavProjects projects={projects} /> */}

@@ -32,6 +32,7 @@ import ViewPilgrim from '@/pages/Pilgrims/ViewPilgrim'
 import ManagementGroupLeaders from './pages/ManagementGroupLeaders/ManagementGroupLeaders'
 import Transactions from '@/pages/Transactions/Transactions'
 import Overview from './pages/Accounts/Overview'
+import UmrahCosts from '@/pages/UmrahCosts/UmrahCosts'
 
 function App() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -81,6 +82,8 @@ function App() {
 
           <Route path="/accounts/sections/borrowings" element={isAuthenticated ? <Borrowings /> : <Navigate to="/" replace />} />
           <Route path="/accounts/sections/borrowings/:id/transactions" element={isAuthenticated ? <BorrowingTransactions /> : <Navigate to="/" replace />} />
+
+          <Route path="/accounts/sections/umrah-costs" element={isAuthenticated ? <UmrahCosts /> : <Navigate to="/" replace />} />
 
           <Route path="/accounts/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/" replace />} />
 
