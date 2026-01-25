@@ -55,7 +55,7 @@ export function AppSidebar({ ...props }) {
     {
       title: t('app.sidebar.options.groupLeader'),
       url: "/management/group-leaders",
-      new: true,
+      new: false,
       icon: Users,
       items: [],
     },
@@ -63,7 +63,7 @@ export function AppSidebar({ ...props }) {
       title: t('app.sidebar.options.hajj'),
       url: "/pilgrims",
       icon: BookOpen,
-      new: true,
+      new: false,
       items: [
         {
           title: t('app.sidebar.options.preRegistration'),
