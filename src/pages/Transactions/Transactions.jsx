@@ -217,8 +217,8 @@ export default function Transactions() {
                                     )}
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-[400px] sm:w-[450px] flex flex-col p-0">
-                                <SheetHeader className="px-5 py-4 border-b border-border/50 flex-shrink-0">
+                            <SheetContent side="right" className="w-100 sm:w-112.5 flex flex-col p-0">
+                                <SheetHeader className="px-5 py-4 border-b border-border/50 shrink-0">
                                     <SheetTitle className="text-lg">Filter Transactions</SheetTitle>
                                 </SheetHeader>
 
@@ -279,7 +279,7 @@ export default function Transactions() {
                                 </div>
 
                                 {/* Sticky Footer */}
-                                <div className="border-t border-border/50 bg-background/80 backdrop-blur-sm px-5 py-4 flex items-center justify-between flex-shrink-0">
+                                <div className="border-t border-border/50 bg-background/80 backdrop-blur-sm px-5 py-4 flex items-center justify-between shrink-0">
                                     <Button
                                         variant="ghost"
                                         size="sm"
@@ -292,7 +292,7 @@ export default function Transactions() {
                                         size="sm"
                                         onClick={handleApplyFilter}
                                         disabled={!draftFilter.date && !(draftFilter.from && draftFilter.to && draftFilter.from <= draftFilter.to)}
-                                        className="min-w-[100px]"
+                                        className="min-w-25"
                                     >
                                         Apply
                                     </Button>
