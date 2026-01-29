@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Phone, Mail, EllipsisVertical, Image, Plus, Edit } from 'lucide-react'
+import { User, Phone, Mail, EllipsisVertical, Image, Plus, Edit, XCircle, Archive, ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -67,7 +67,10 @@ export function PilgrimProfileCard({
     passport,
     onShowAvatarModal,
     onShowPassportDialog,
-    onShowMarkAsRegisteredModal
+    onShowMarkAsRegisteredModal,
+    onShowCancelModal,
+    onShowArchiveModal,
+    onShowTransferModal
 }) {
     const { t, language } = useI18n()
     const avatarColor = getAvatarColor(pilgrimName)
@@ -81,7 +84,7 @@ export function PilgrimProfileCard({
                 </CardTitle>
 
                 {/* Status action menu */}
-                {passport?.attributes?.filePath || preRegistration?.attributes?.status === "pending" && (
+                {(passport?.attributes?.filePath || preRegistration?.attributes?.status === "pending" || preRegistration?.attributes?.status === "active") && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
@@ -89,18 +92,35 @@ export function PilgrimProfileCard({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {/* Always available: View Passports (if any) */}
                             {passport?.attributes?.filePath && (
                                 <DropdownMenuItem onClick={onShowPassportDialog} className="gap-2">
                                     <Image className="h-4 w-4" />
                                     <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'View Passport', bn: 'পাসপোর্ট দেখুন' })}</span>
                                 </DropdownMenuItem>
                             )}
+
                             {preRegistration?.attributes?.status === "pending" && (
                                 <DropdownMenuItem onClick={onShowMarkAsRegisteredModal} className="gap-2">
                                     <Plus className="h-4 w-4" />
-                                    <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Mark as Registered', bn: 'রেজিস্টার্ড হিসেবে চিহ্নিত করুন' })}</span>
+                                    <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Register', bn: 'রেজিস্টার করুন' })}</span>
                                 </DropdownMenuItem>
+                            )}
+
+                            {preRegistration?.attributes?.status === "active" && (
+                                <>
+                                    <DropdownMenuItem onClick={onShowCancelModal} className="gap-2 text-red-600">
+                                        <XCircle className="h-4 w-4" />
+                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Cancel', bn: 'বাতিল করুন' })}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={onShowArchiveModal} className="gap-2 text-orange-600">
+                                        <Archive className="h-4 w-4" />
+                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Archive', bn: 'আর্কাইভ করুন' })}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={onShowTransferModal} className="gap-2 text-blue-600">
+                                        <ArrowRight className="h-4 w-4" />
+                                        <span className={language === 'bn' ? 'font-bengali' : ''}>{t({ en: 'Transfer', bn: 'ট্রান্সফার করুন' })}</span>
+                                    </DropdownMenuItem>
+                                </>
                             )}
                         </DropdownMenuContent>
                     </DropdownMenu>

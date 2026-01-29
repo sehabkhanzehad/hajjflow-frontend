@@ -255,6 +255,24 @@
             "title": "Pre Registrations",
             "description": "Manage pilgrim pre-registrations",
             "add_new": "Add Pre Registration",
+            "tabs": {
+                "active": "Active",
+                "cancelled": "Cancelled",
+                "transferred": "Transferred",
+                "archived": "Archived"
+            },
+            "cancelled": {
+                "description": "Cancelled pre-registrations will appear here",
+                "empty": "No cancelled records found"
+            },
+            "transferred": {
+                "description": "Transferred pre-registrations will appear here",
+                "empty": "No transferred records found"
+            },
+            "archived": {
+                "description": "Archived pre-registrations will appear here",
+                "empty": "No archived records found"
+            },
             "empty": {
                 "title": "No pre-registrations found",
                 "description": "Add pre-registration records to track pilgrim applications."

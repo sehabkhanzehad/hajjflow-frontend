@@ -8,6 +8,9 @@ import { EditAvatarModal } from './components/EditAvatarModal'
 import { EditAddressModal } from './components/EditAddressModal'
 import { EditRegistrationModal } from './components/EditRegistrationModal'
 import { MarkAsRegisteredModal } from './components/MarkAsRegisteredModal'
+import { CancelPreRegistrationModal } from './components/CancelPreRegistrationModal'
+import { ArchivePreRegistrationModal } from './components/ArchivePreRegistrationModal'
+import { TransferPreRegistrationModal } from './components/TransferPreRegistrationModal'
 import { PilgrimProfileCard } from './components/PilgrimProfileCard'
 import { toast } from 'sonner'
 import { useI18n } from '@/contexts/I18nContext'
@@ -88,6 +91,11 @@ export default function ViewPreRegistration() {
     // Transaction details modal
     const [showTransactionModal, setShowTransactionModal] = useState(false)
     const [selectedTransaction, setSelectedTransaction] = useState(null)
+
+    // Cancel, Archive, Transfer modals
+    const [showCancelModal, setShowCancelModal] = useState(false)
+    const [showArchiveModal, setShowArchiveModal] = useState(false)
+    const [showTransferModal, setShowTransferModal] = useState(false)
 
     // Timestamp for cache busting
     const [passportTimestamp, setPassportTimestamp] = useState(0)
@@ -231,7 +239,7 @@ export default function ViewPreRegistration() {
 
     // Mark as registered mutation
     const markAsRegisteredMutation = useMutation({
-        mutationFn: (data) => api.put(`/pre-registrations/${id}/mark-as-registered`, data),
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/active`, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
             setShowMarkAsRegisteredModal(false)
@@ -239,6 +247,45 @@ export default function ViewPreRegistration() {
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || t({ en: 'Failed to mark as registered', bn: 'রেজিস্টার্ড হিসেবে চিহ্নিত করতে ব্যর্থ' }))
+        }
+    })
+
+    // Cancel pre-registration mutation
+    const cancelPreRegistrationMutation = useMutation({
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/cancel`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
+            setShowCancelModal(false)
+            toast.success(t({ en: 'Pre-registration cancelled successfully', bn: 'প্রি-রেজিস্ট্রেশন সফলভাবে বাতিল করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to cancel pre-registration', bn: 'প্রি-রেজিস্ট্রেশন বাতিল করতে ব্যর্থ' }))
+        }
+    })
+
+    // Archive pre-registration mutation
+    const archivePreRegistrationMutation = useMutation({
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/archive`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
+            setShowArchiveModal(false)
+            toast.success(t({ en: 'Pre-registration archived successfully', bn: 'প্রি-রেজিস্ট্রেশন সফলভাবে আর্কাইভ করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to archive pre-registration', bn: 'প্রি-রেজিস্ট্রেশন আর্কাইভ করতে ব্যর্থ' }))
+        }
+    })
+
+    // Transfer pre-registration mutation
+    const transferPreRegistrationMutation = useMutation({
+        mutationFn: (data) => api.put(`/pre-registrations/${id}/transfer`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['preRegistration', id] })
+            setShowTransferModal(false)
+            toast.success(t({ en: 'Pre-registration transferred successfully', bn: 'প্রি-রেজিস্ট্রেশন সফলভাবে ট্রান্সফার করা হয়েছে' }))
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t({ en: 'Failed to transfer pre-registration', bn: 'প্রি-রেজিস্ট্রেশন ট্রান্সফার করতে ব্যর্থ' }))
         }
     })
 
@@ -393,8 +440,11 @@ export default function ViewPreRegistration() {
                     onShowAvatarModal={() => setShowAvatarModal(true)}
                     onShowPassportDialog={handleOpenPassportDialog}
                     onShowMarkAsRegisteredModal={() => setShowMarkAsRegisteredModal(true)}
+                    onShowCancelModal={() => setShowCancelModal(true)}
+                    onShowArchiveModal={() => setShowArchiveModal(true)}
+                    onShowTransferModal={() => setShowTransferModal(true)}
                 />
-                
+
 
                 {/* Tabs for different sections */}
                 <Tabs defaultValue="profile">
@@ -1126,6 +1176,30 @@ export default function ViewPreRegistration() {
                     onOpenChange={setShowMarkAsRegisteredModal}
                     onSubmit={(data) => markAsRegisteredMutation.mutate(data)}
                     isSubmitting={markAsRegisteredMutation.isPending}
+                />
+
+                {/* Cancel Pre-Registration Modal */}
+                <CancelPreRegistrationModal
+                    open={showCancelModal}
+                    onOpenChange={setShowCancelModal}
+                    onSubmit={(data) => cancelPreRegistrationMutation.mutate(data)}
+                    isSubmitting={cancelPreRegistrationMutation.isPending}
+                />
+
+                {/* Archive Pre-Registration Modal */}
+                <ArchivePreRegistrationModal
+                    open={showArchiveModal}
+                    onOpenChange={setShowArchiveModal}
+                    onSubmit={(data) => archivePreRegistrationMutation.mutate(data)}
+                    isSubmitting={archivePreRegistrationMutation.isPending}
+                />
+
+                {/* Transfer Pre-Registration Modal */}
+                <TransferPreRegistrationModal
+                    open={showTransferModal}
+                    onOpenChange={setShowTransferModal}
+                    onSubmit={(data) => transferPreRegistrationMutation.mutate(data)}
+                    isSubmitting={transferPreRegistrationMutation.isPending}
                 />
             </div>
         </DashboardLayout>

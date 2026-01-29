@@ -47,7 +47,7 @@ const getAvatarColor = (name) => {
     return colors[Math.abs(hash) % colors.length]
 }
 
-export function PreRegistrationTable({ preRegistrations, onDelete, onView }) {
+export function PreRegistrationTable({ preRegistrations, onDelete, onView, showActions = true, showDelete = true }) {
     const { t } = useI18n();
     return (
         <Table>
@@ -60,7 +60,7 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView }) {
                     <TableHead className="w-37.5">{t({ en: "Group Leader", bn: "গ্রুপ লিডার" })}</TableHead>
                     <TableHead className="w-50">{t({ en: "Address", bn: "ঠিকানা" })}</TableHead>
                     <TableHead className="w-25">{t({ en: "Status", bn: "স্ট্যাটাস" })}</TableHead>
-                    <TableHead className="w-12.5">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>
+                    {showActions && <TableHead className="w-12.5">{t({ en: "Action", bn: "অ্যাকশন" })}</TableHead>}
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -175,26 +175,32 @@ export function PreRegistrationTable({ preRegistrations, onDelete, onView }) {
                                     </div>
                                 </div>
                             </TableCell>
-                            <TableCell>
-                                <div className="flex items-center justify-end">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
-                                                <EllipsisVertical size={15} />
-                                            </button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => onView(preRegistration)}>
-                                              View Details
-                                            </DropdownMenuItem>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem onClick={() => onDelete(preRegistration)} className="text-destructive">
-                                            Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </TableCell>
+                            {showActions && (
+                                <TableCell>
+                                    <div className="flex items-center justify-end">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
+                                                    <EllipsisVertical size={15} />
+                                                </button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => onView(preRegistration)}>
+                                                  View Details
+                                                </DropdownMenuItem>
+                                                {showDelete && (
+                                                    <>
+                                                        <DropdownMenuSeparator />
+                                                        <DropdownMenuItem onClick={() => onDelete(preRegistration)} className="text-destructive">
+                                                        Delete
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                )}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </TableCell>
+                            )}
                         </TableRow>
                     )
                 })}
