@@ -32,36 +32,50 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
     const [selectedSize, setSelectedSize] = useState('standard')
     const [cardOrientation, setCardOrientation] = useState('landscape')
     const [selectedDesign, setSelectedDesign] = useState('modern')
-    const [printMode, setPrintMode] = useState('single')
+    const printMode = 'double'
 
     const handlePrint = () => {
-        const printWindow = window.open('', '_blank')
-        if (!printWindow) {
-            alert('Please allow popups to print ID cards')
-            return
-        }
-
         const size = IDCardSizes[selectedSize]
         const isPortrait = cardOrientation === 'portrait'
-        const pageWidth = isPortrait ? size.height : size.width
-        const pageHeight = isPortrait ? size.width : size.height
-        const cardsHtml = pilgrims.map((pilgrim, index) => {
+        const cardWidth = isPortrait ? size.heightPx : size.widthPx
+        const cardHeight = isPortrait ? size.widthPx : size.heightPx
+
+        // A4 dimensions in pixels (at 96 DPI): 794px × 1123px
+        const a4Width = 794
+        const a4Height = 1123
+        const margin = 20
+        const gap = 15
+
+        // Calculate how many cards fit per A4 page
+        const cardsPerRow = Math.floor((a4Width - 2 * margin + gap) / (cardWidth + gap))
+        const cardsPerCol = Math.floor((a4Height - 2 * margin + gap) / (cardHeight + gap))
+        const cardsPerPage = cardsPerRow * cardsPerCol
+
+        // Group all cards (front + back) into pages
+        let allCards = []
+        pilgrims.forEach((pilgrim, index) => {
             const frontCard = document.getElementById(`id-card-front-${index}`)
             const backCard = document.getElementById(`id-card-back-${index}`)
 
-            let html = ''
             if (frontCard) {
-                html += `<div class="card-page">${frontCard.outerHTML}</div>`
+                allCards.push(frontCard.outerHTML)
             }
             if (printMode === 'double' && backCard) {
-                html += `<div class="card-page">${backCard.outerHTML}</div>`
+                allCards.push(backCard.outerHTML)
             }
-            return html
-        }).join('')
+        })
+
+        // Create pages with grid layout
+        let pagesHtml = ''
+        for (let i = 0; i < allCards.length; i += cardsPerPage) {
+            const pageCards = allCards.slice(i, i + cardsPerPage)
+            const cardsHtml = pageCards.map(card => `<div class="card-item">${card}</div>`).join('')
+            pagesHtml += `<div class="page">${cardsHtml}</div>`
+        }
 
         const css = `
             @page {
-                size: ${pageWidth} ${pageHeight};
+                size: A4;
                 margin: 0;
             }
             * {
@@ -74,17 +88,26 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                 padding: 0;
                 background: white;
             }
-            .card-page {
-                width: ${pageWidth};
-                height: ${pageHeight};
+            .page {
+                width: ${a4Width}px;
+                height: ${a4Height}px;
+                padding: ${margin}px;
                 page-break-after: always;
+                display: grid;
+                grid-template-columns: repeat(${cardsPerRow}, ${cardWidth}px);
+                grid-template-rows: repeat(${cardsPerCol}, ${cardHeight}px);
+                gap: ${gap}px;
+                justify-content: center;
+                align-content: center;
+                background: white;
+            }
+            .page:last-child {
+                page-break-after: auto;
+            }
+            .card-item {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: white;
-            }
-            .card-page:last-child {
-                page-break-after: auto;
             }
             .id-card-front, .id-card-back {
                 print-color-adjust: exact;
@@ -98,31 +121,49 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
             }
         `
 
-        printWindow.document.write(`
+        const htmlContent = `
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>Pilgrim ID Cards</title>
+                <title>Pilgrim ID Cards - ${pilgrims.length} Card(s)</title>
                 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
                 <style>${css}</style>
             </head>
             <body>
-                ${cardsHtml}
-                <script>
-                    window.onload = function() {
-                        setTimeout(function() {
-                            window.print();
-                            window.onafterprint = function() {
-                                window.close();
-                            }
-                        }, 500);
-                    }
-                </script>
+                ${pagesHtml}
             </body>
             </html>
-        `)
-        printWindow.document.close()
+        `
+
+        // Create hidden iframe
+        const iframe = document.createElement('iframe')
+        iframe.style.position = 'fixed'
+        iframe.style.right = '0'
+        iframe.style.bottom = '0'
+        iframe.style.width = '0'
+        iframe.style.height = '0'
+        iframe.style.border = 'none'
+        document.body.appendChild(iframe)
+
+        // Write content to iframe
+        const iframeDoc = iframe.contentWindow.document
+        iframeDoc.open()
+        iframeDoc.write(htmlContent)
+        iframeDoc.close()
+
+        // Wait for content to load, then print
+        iframe.onload = () => {
+            setTimeout(() => {
+                iframe.contentWindow.focus()
+                iframe.contentWindow.print()
+
+                // Remove iframe after printing
+                setTimeout(() => {
+                    document.body.removeChild(iframe)
+                }, 1000)
+            }, 500)
+        }
     }
 
     const size = IDCardSizes[selectedSize]
@@ -133,7 +174,7 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                 <SheetHeader className="px-6 py-4 border-b border-border">
                     <SheetTitle className="text-foreground">{t({ en: "Print ID Cards", bn: "আইডি কার্ড প্রিন্ট করুন" })}</SheetTitle>
                     <SheetDescription className="text-muted-foreground">
-                        {t({ en: `Generating ${pilgrims.length} ID card(s)`, bn: `${pilgrims.length}টি আইডি কার্ড তৈরি করা হচ্ছে` })}
+                        Preview and customize ID card settings before printing.
                     </SheetDescription>
                 </SheetHeader>
 
@@ -152,11 +193,10 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                             key={key}
                                             type="button"
                                             onClick={() => setSelectedDesign(key)}
-                                            className={`group relative p-3 rounded-lg border-2 transition-all text-left ${
-                                                selectedDesign === key
-                                                    ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm'
-                                                    : 'border-border hover:border-primary/50 bg-card hover:bg-accent/50'
-                                            }`}
+                                            className={`group relative p-3 rounded-lg border-2 transition-all text-left ${selectedDesign === key
+                                                ? 'border-primary bg-primary/5 dark:bg-primary/10 shadow-sm'
+                                                : 'border-border hover:border-primary/50 bg-card hover:bg-accent/50'
+                                                }`}
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1 min-w-0">
@@ -184,74 +224,52 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
 
                             {/* Orientation Selection */}
                             <div>
-                            <Label className="text-sm font-medium mb-3 block">
-                                {t({ en: "Card Orientation", bn: "কার্ড ওরিয়েন্টেশন" })}
-                            </Label>
-                            <RadioGroup value={cardOrientation} onValueChange={setCardOrientation}>
-                                <div className="flex gap-4">
-                                    {Object.entries(CardOrientations).map(([key, orientation]) => (
-                                        <div key={key} className="flex items-center space-x-2">
-                                            <RadioGroupItem value={key} id={`orientation-${key}`} />
-                                            <label htmlFor={`orientation-${key}`} className="cursor-pointer text-sm">
-                                                {t({ en: orientation.name, bn: orientation.namebn })}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </RadioGroup>
-                        </div>
+                                <Label className="text-sm font-medium mb-3 block">
+                                    {t({ en: "Card Orientation", bn: "কার্ড ওরিয়েন্টেশন" })}
+                                </Label>
+                                <RadioGroup value={cardOrientation} onValueChange={setCardOrientation}>
+                                    <div className="flex gap-4">
+                                        {Object.entries(CardOrientations).map(([key, orientation]) => (
+                                            <div key={key} className="flex items-center space-x-2">
+                                                <RadioGroupItem value={key} id={`orientation-${key}`} />
+                                                <label htmlFor={`orientation-${key}`} className="cursor-pointer text-sm">
+                                                    {t({ en: orientation.name, bn: orientation.namebn })}
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </RadioGroup>
+                            </div>
 
-                        {/* Size Selection */}
-                        <div>
-                            <Label className="text-sm font-medium mb-3 block">
-                                {t({ en: "Card Size", bn: "কার্ড সাইজ" })}
-                            </Label>
-                            <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {Object.entries(IDCardSizes).map(([key, sizeData]) => (
-                                        <div key={key} className="flex items-start space-x-2">
-                                            <RadioGroupItem value={key} id={key} />
-                                            <label htmlFor={key} className="cursor-pointer flex-1">
-                                                <div className="text-sm font-medium">
-                                                    {t({ en: sizeData.name, bn: sizeData.namebn })}
-                                                </div>
-                                                <div className="text-xs text-muted-foreground">
-                                                    {sizeData.width} × {sizeData.height}
-                                                </div>
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </RadioGroup>
-                        </div>
-
-                        {/* Print Mode */}
-                        <div>
-                            <Label className="text-sm font-medium mb-3 block">
-                                {t({ en: "Print Mode", bn: "প্রিন্ট মোড" })}
-                            </Label>
-                            <RadioGroup value={printMode} onValueChange={setPrintMode}>
-                                <div className="space-y-2">
-                                    {Object.entries(PrintOrientations).map(([key, mode]) => (
-                                        <div key={key} className="flex items-center space-x-2">
-                                            <RadioGroupItem value={key} id={`mode-${key}`} />
-                                            <label htmlFor={`mode-${key}`} className="cursor-pointer text-sm">
-                                                {t({ en: mode.name, bn: mode.namebn })}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </RadioGroup>
-                        </div>
+                            {/* Size Selection */}
+                            <div>
+                                <Label className="text-sm font-medium mb-3 block">
+                                    {t({ en: "Card Size", bn: "কার্ড সাইজ" })}
+                                </Label>
+                                <RadioGroup value={selectedSize} onValueChange={setSelectedSize}>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {Object.entries(IDCardSizes).map(([key, sizeData]) => (
+                                            <div key={key} className="flex items-start space-x-2">
+                                                <RadioGroupItem value={key} id={key} />
+                                                <label htmlFor={key} className="cursor-pointer flex-1">
+                                                    <div className="text-sm font-medium">
+                                                        {t({ en: sizeData.name, bn: sizeData.namebn })}
+                                                    </div>
+                                                    <div className="text-xs text-muted-foreground">
+                                                        {sizeData.width} × {sizeData.height}
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </RadioGroup>
+                            </div>
                         </div>
                     </div>
 
                     {/* Right Panel - Preview */}
                     <div className="flex-1 overflow-y-auto bg-muted/30 dark:bg-muted/20 p-6">
-                        <div className="max-w-2xl mx-auto">
-                            <Label className="text-sm font-medium mb-4 block text-foreground">
-                                {t({ en: "Preview", bn: "প্রিভিউ" })}
-                            </Label>
+                        <div className="max-w-xl mx-auto">
                             <div className="space-y-6">
                                 {pilgrims.slice(0, 1).map((pilgrim, index) => (
                                     <div key={index} className="space-y-4">
@@ -283,11 +301,6 @@ export function IDCardPrintModal({ open, onOpenChange, pilgrims = [], packageInf
                                         )}
                                     </div>
                                 ))}
-                                {pilgrims.length > 1 && (
-                                    <p className="text-sm text-center text-muted-foreground bg-card/50 dark:bg-card/30 p-3 rounded-lg border border-border">
-                                        + {pilgrims.length - 1} more card(s) will be printed
-                                    </p>
-                                )}
                             </div>
                         </div>
 

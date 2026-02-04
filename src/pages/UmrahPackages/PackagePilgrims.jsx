@@ -601,10 +601,12 @@ export default function PackagePilgrims() {
                     pilgrims={pilgrims || []}
                     packageInfo={packageInfo}
                     companyInfo={{
-                        name: 'M/S Raj Travel',
+                        name: 'M/S Raj Travels',
                         phone: '+880 1234-567890',
-                        email: 'info@rajtravels.com',
-                        address: 'Dhaka, Bangladesh',
+                        email: 'info@msrajtravel.com',
+                        address: '189/1, Nayagola, Nayagola Hat-6300, Chapainawaganj, Rajshahi, Dhaka, Bangladesh',
+                        emergencyContact: '+880 9876-543210',
+                        hajjLicense: '0935',
                     }}
                 />
 

@@ -126,39 +126,7 @@ export const CardDesigns = {
             patternColor: '#ea580c',
         },
     },
-    
-    elegant: {
-        name: 'Elegant',
-        namebn: 'মার্জিত',
-        description: 'Smooth purple wave',
-        descriptionbn: 'মসৃণ বেগুনী ঢেউ',
-        front: {
-            gradient: 'from-purple-500 via-pink-500 to-purple-600',
-            border: 'border-purple-600',
-            headerBorder: 'border-purple-400',
-            headerText: 'text-white',
-            subText: 'text-purple-100',
-            avatarBorder: 'border-white',
-            avatarBg: 'bg-purple-100',
-            avatarText: 'text-purple-800',
-            footerBg: 'bg-purple-800',
-            footerBorder: 'border-purple-700',
-            footerText: 'text-white',
-            patternColor: '#a855f7',
-        },
-        back: {
-            gradient: 'from-purple-500 via-pink-500 to-purple-600',
-            border: 'border-purple-600',
-            headerBorder: 'border-purple-400',
-            headerText: 'text-white',
-            sectionBg: 'bg-white/10',
-            sectionBorder: 'border-white/20',
-            emergencyBg: 'bg-pink-100',
-            emergencyBorder: 'border-pink-300',
-            patternColor: '#ec4899',
-        },
-    },
-    
+
     corporate: {
         name: 'Corporate',
         namebn: 'করপোরেট',
@@ -191,7 +159,7 @@ export const CardDesigns = {
             patternColor: '#cbd5e1',
         },
     },
-    
+
     // ===== ADD MORE DESIGNS BELOW THIS LINE =====
 };
 

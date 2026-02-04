@@ -28,6 +28,26 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
     const cardHeight = isPortrait ? size.width : size.height
     const designStyle = CardDesigns[design]?.front || CardDesigns.modern.front
 
+    // Calculate scale factor based on card size (standard is baseline)
+    const baseWidth = 324 // standard card width
+    const scaleFactor = (isPortrait ? size.heightPx : size.widthPx) / baseWidth
+    const clampSize = (value, min, max) => Math.max(min, Math.min(max, value))
+
+    // Responsive font and spacing sizes
+    const logoSize = Math.max(24, Math.round(24 * scaleFactor))
+    const titleSize = Math.max(14, Math.round(14 * scaleFactor))
+    const subtitleSize = Math.max(8, Math.round(8 * scaleFactor))
+    const avatarSize = Math.max(80, Math.round(80 * scaleFactor))
+    const nameSize = Math.max(11, Math.round(11 * scaleFactor))
+    const infoSize = Math.max(8, Math.round(8 * scaleFactor))
+    const textSize = Math.max(7, Math.round(7 * scaleFactor))
+    const padding = Math.max(12, Math.round(12 * scaleFactor))
+    // Header icon and logo sizes - reduced and clamped
+    const headerIconSize = clampSize(Math.round(logoSize * 0.9), 22, 28)
+    const headerIconSizeLg = clampSize(Math.round(logoSize * 1.1), 26, 32)
+    const headerLogoSize = clampSize(Math.round(logoSize * 0.85), 20, 26)
+    const headerLogoSizeLg = clampSize(Math.round(logoSize * 1), 24, 30)
+
     // Modern Design Layout - Original horizontal/vertical flex
     if (design === 'modern') {
         return (
@@ -36,7 +56,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                 style={{
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: '12px',
+                    borderRadius: `${Math.max(12, 12 * scaleFactor)}px`,
                 }}
             >
                 <div className="absolute inset-0 opacity-5">
@@ -50,18 +70,20 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                     </svg>
                 </div>
 
-                <div className="relative h-full flex flex-col p-3">
-                    <div className={`text-center border-b ${designStyle.headerBorder} pb-2 mb-2`}>
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                            <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" onError={(e) => e.target.style.display = 'none'} />
-                            <h1 className={`text-sm font-bold ${designStyle.headerText}`}>{companyInfo.name || 'M/S Raj Travel'}</h1>
+                <div className="relative h-full flex flex-col" style={{ padding: `${padding}px` }}>
+                    <div className={`border-b ${designStyle.headerBorder}`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
+                        <div className="flex items-center" style={{ gap: `${padding * 0.6}px` }}>
+                            <img src="/logo.png" alt="Logo" style={{ height: `${Math.max(40, headerLogoSize * 1.6)}px`, width: `${Math.max(40, headerLogoSize * 1.6)}px`, flexShrink: 0 }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                            <div className="flex-1">
+                                <h1 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h1>
+                                <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj License: {companyInfo.hlNumber || '0935'}</p>
+                            </div>
                         </div>
-                        <p className={`text-[8px] ${designStyle.subText} font-medium`}>Hajj & Umrah Management</p>
                     </div>
 
-                    <div className={`flex-1 flex ${isPortrait ? 'flex-col items-center' : 'items-center gap-3'}`}>
+                    <div className={`flex-1 flex ${isPortrait ? 'flex-col items-center' : 'items-center'}`} style={{ gap: `${padding}px` }}>
                         <div className="flex-shrink-0">
-                            <Avatar className={`${isPortrait ? 'h-24 w-24' : 'h-20 w-20'} border-2 ${designStyle.avatarBorder} shadow-md`}>
+                            <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-md`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px` }}>
                                 <AvatarImage src={user?.avatar} alt={user?.fullName} />
                                 <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-semibold`}>
                                     {getInitials(user?.firstName, user?.lastName)}
@@ -69,156 +91,118 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                             </Avatar>
                         </div>
 
-                        <div className={`flex-1 ${isPortrait ? 'text-center mt-2' : ''} min-w-0`}>
-                            <h2 className="text-[11px] font-bold text-gray-900 truncate">{user?.fullName}</h2>
-                            <p className="text-[9px] text-gray-600 truncate">{user?.fullNameBn}</p>
-                            <div className="mt-1.5 space-y-0.5 text-[8px] text-gray-700">
-                                <p className="truncate"><span className="font-medium">Passport:</span> {passport?.passport_number}</p>
-                                <p className="truncate"><span className="font-medium">Phone:</span> {user?.phone}</p>
-                                <p className="truncate"><span className="font-medium">NID:</span> {user?.nid}</p>
-                                <p className="truncate"><span className="font-medium">DOB:</span> {user?.date_of_birth}</p>
+                        <div className={`flex-1 ${isPortrait ? 'text-center' : ''} min-w-0`} style={{ marginTop: isPortrait ? `${padding * 0.6}px` : '0' }}>
+                            <h2 className="font-bold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
+                            <p className="text-gray-600 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px` }}>{user?.fullNameBn}</p>
+                            <div className="text-gray-700" style={{ marginTop: `${padding * 0.4}px`, display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px` }}>
+                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">Passport:</span> {passport?.passportNumber}</p>
+                                {/* <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">Phone:</span> {user?.phone}</p> */}
+                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">NID:</span> {user?.nid}</p>
+                                <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium">DOB:</span> {user?.dateOfBirth}</p>
                             </div>
                         </div>
                     </div>
 
-                    {packageInfo && (
-                        <div className={`border-t ${designStyle.headerBorder} pt-2 mt-2`}>
-                            <div className={`${designStyle.footerBg} rounded px-2 py-1 border ${designStyle.footerBorder}`}>
-                                <p className={`text-[9px] font-bold ${designStyle.footerText} truncate`}>{packageInfo.name}</p>
-                                {packageInfo.start_date && packageInfo.end_date && (
-                                    <p className={`text-[7px] ${designStyle.subText}`}>
-                                        {packageInfo.start_date} - {packageInfo.end_date}
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    <div className={`border-t ${designStyle.headerBorder} flex items-center justify-between`} style={{ paddingTop: `${padding * 0.6}px`, marginTop: `${padding * 0.6}px` }}>
+                        <img src="/kaaba2.png" alt="Makkah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                        <img src="/bd.png" alt="Bangladesh" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                        <img src="/madinah2.png" alt="Madinah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                    </div>
                 </div>
             </div>
         )
     }
 
-    // Classic Design Layout - Centered with ornamental corners
+    // Classic Design Layout - Responsive layout based on orientation
     if (design === 'classic') {
+        const cornerSize = Math.max(40, Math.round(48 * scaleFactor))
         return (
             <div
                 className={`id-card-front relative overflow-hidden bg-gradient-to-br ${designStyle.gradient} border-2 ${designStyle.border} shadow-lg`}
                 style={{
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: '16px',
+                    borderRadius: `${Math.max(16, 16 * scaleFactor)}px`,
                 }}
             >
-                <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-amber-400 rounded-tl-2xl"></div>
-                <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-amber-400 rounded-tr-2xl"></div>
-                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-amber-400 rounded-bl-2xl"></div>
-                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-amber-400 rounded-br-2xl"></div>
+                <div className="absolute top-0 left-0 border-t-4 border-l-4 border-amber-400 rounded-tl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
+                <div className="absolute top-0 right-0 border-t-4 border-r-4 border-amber-400 rounded-tr-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
+                <div className="absolute bottom-0 left-0 border-b-4 border-l-4 border-amber-400 rounded-bl-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
+                <div className="absolute bottom-0 right-0 border-b-4 border-r-4 border-amber-400 rounded-br-2xl" style={{ width: `${cornerSize}px`, height: `${cornerSize}px` }}></div>
 
-                <div className="relative h-full flex flex-col items-center justify-center p-4 text-center">
-                    <div className="mb-3">
-                        <img src="/logo.png" alt="Logo" className="h-10 w-10 mx-auto mb-1 object-contain" onError={(e) => e.target.style.display = 'none'} />
-                        <h1 className={`text-xs font-bold ${designStyle.headerText}`}>{companyInfo.name || 'M/S Raj Travel'}</h1>
-                        <p className={`text-[7px] ${designStyle.subText} font-medium`}>Hajj & Umrah Service</p>
-                    </div>
-
-                    <Avatar className={`h-24 w-24 border-4 ${designStyle.avatarBorder} shadow-xl mb-2`}>
-                        <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                        <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} text-2xl font-bold`}>
-                            {getInitials(user?.firstName, user?.lastName)}
-                        </AvatarFallback>
-                    </Avatar>
-
-                    <h2 className="text-[12px] font-extrabold text-gray-900">{user?.fullName}</h2>
-                    <p className="text-[10px] text-gray-700 mb-2">{user?.fullNameBn}</p>
-
-                    <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[7px] text-gray-700">
-                        <div className="text-right font-medium">Passport:</div>
-                        <div className="text-left">{passport?.passport_number}</div>
-                        <div className="text-right font-medium">Phone:</div>
-                        <div className="text-left">{user?.phone}</div>
-                        <div className="text-right font-medium">NID:</div>
-                        <div className="text-left">{user?.nid}</div>
-                        <div className="text-right font-medium">DOB:</div>
-                        <div className="text-left">{user?.date_of_birth}</div>
-                    </div>
-
-                    {packageInfo && (
-                        <div className={`mt-3 ${designStyle.footerBg} rounded-lg px-3 py-1.5 border-2 ${designStyle.footerBorder}`}>
-                            <p className={`text-[8px] font-bold ${designStyle.footerText}`}>{packageInfo.name}</p>
+                {isPortrait ? (
+                    // Portrait Layout - Centered
+                    <div className="relative h-full flex flex-col items-center justify-center text-center" style={{ padding: `${padding}px` }}>
+                        <div style={{ marginBottom: `${padding}px` }}>
+                            <div className="flex flex-col items-center" style={{ gap: `${padding * 0.3}px`, marginBottom: `${padding * 0.4}px` }}>
+                                <img src="/logo.png" alt="Logo" className="mx-auto object-contain" style={{ height: `${headerLogoSizeLg}px`, width: `${headerLogoSizeLg}px` }} onError={(e) => e.target.style.display = 'none'} />
+                            </div>
+                            <h1 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h1>
+                            <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj License: {companyInfo.hajjLicense || '1234567890'}</p>
                         </div>
-                    )}
-                </div>
-            </div>
-        )
-    }
 
-    // Elegant Design Layout - Smooth rounded waves
-    if (design === 'elegant') {
-        return (
-            <div
-                className="id-card-front relative overflow-hidden bg-white border-2 border-purple-400 shadow-lg"
-                style={{
-                    width: cardWidth,
-                    height: cardHeight,
-                    borderRadius: '16px',
-                }}
-            >
-                {/* Smooth wave shapes */}
-                <div className="absolute top-0 left-0 right-0">
-                    <svg viewBox="0 0 400 100" className="w-full">
-                        <path d="M0,40 Q100,0 200,40 T400,40 L400,0 L0,0 Z" fill="url(#waveGradient1)" />
-                        <defs>
-                            <linearGradient id="waveGradient1" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#a855f7" />
-                                <stop offset="100%" stopColor="#ec4899" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0">
-                    <svg viewBox="0 0 400 100" className="w-full">
-                        <path d="M0,60 Q100,100 200,60 T400,60 L400,100 L0,100 Z" fill="url(#waveGradient2)" />
-                        <defs>
-                            <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#c026d3" />
-                                <stop offset="100%" stopColor="#ec4899" />
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
+                        <Avatar className={`border-4 ${designStyle.avatarBorder} shadow-xl`} style={{ height: `${Math.max(96, avatarSize * 1.2)}px`, width: `${Math.max(96, avatarSize * 1.2)}px`, marginBottom: `${padding * 0.6}px` }}>
+                            <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                            <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-bold`} style={{ fontSize: `${Math.max(24, nameSize * 2)}px` }}>
+                                {getInitials(user?.firstName, user?.lastName)}
+                            </AvatarFallback>
+                        </Avatar>
 
-                <div className="relative h-full flex flex-col items-center justify-center p-4 text-center">
-                    <div className="mb-2">
-                        <img src="/logo.png" alt="Logo" className="h-8 w-8 mx-auto mb-1 object-contain" onError={(e) => e.target.style.display = 'none'} />
-                        <h1 className={`text-xs font-bold ${designStyle.headerText}`}>{companyInfo.name || 'M/S Raj Travel'}</h1>
-                        <p className="text-[7px] text-purple-600">Pilgrim ID</p>
-                    </div>
+                        <h2 className="font-extrabold text-gray-900" style={{ fontSize: `${Math.max(12, nameSize + 1)}px` }}>{user?.fullName}</h2>
+                        <p className="text-gray-700" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px` }}>{user?.fullNameBn}</p>
 
-                    <Avatar className={`h-24 w-24 border-4 ${designStyle.avatarBorder} shadow-xl mb-2 ring-2 ring-purple-200`}>
-                        <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                        <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} text-xl font-bold`}>
-                            {getInitials(user?.firstName, user?.lastName)}
-                        </AvatarFallback>
-                    </Avatar>
+                        <div className="grid grid-cols-2 text-gray-700" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px` }}>
+                            <div className="text-right font-medium">Passport:</div>
+                            <div className="text-left">{passport?.passportNumber}</div>
+                            <div className="text-right font-medium">NID:</div>
+                            <div className="text-left">{user?.nid}</div>
+                            <div className="text-right font-medium">DOB:</div>
+                            <div className="text-left">{user?.dateOfBirth}</div>
+                        </div>
 
-                    <h2 className="text-[13px] font-extrabold text-gray-900">{user?.fullName}</h2>
-                    <p className="text-[10px] text-gray-600 mb-1">{user?.fullNameBn}</p>
-
-                    <div className="bg-purple-50 rounded-lg px-3 py-1.5 w-full max-w-[200px]">
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 text-[7px]">
-                            <span className="text-gray-600 text-right">ID:</span>
-                            <span className="text-gray-900 font-semibold truncate">{passport?.passport_number}</span>
-                            <span className="text-gray-600 text-right">Phone:</span>
-                            <span className="text-gray-900 font-semibold truncate">{user?.phone}</span>
+                        <div className="flex items-center justify-between" style={{ marginTop: `${padding}px`, paddingTop: `${padding * 0.6}px`, borderTop: '1px solid rgb(251, 191, 36, 0.3)' }}>
+                            <img src="/kaaba2.png" alt="Makkah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                            <img src="/madinah2.png" alt="Madinah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
                         </div>
                     </div>
-
-                    {packageInfo && (
-                        <div className="mt-2">
-                            <p className="text-[8px] font-bold text-purple-900">{packageInfo.name}</p>
+                ) : (
+                    // Landscape Layout - Horizontal
+                    <div className="relative h-full flex flex-col" style={{ padding: `${padding}px` }}>
+                        <div className="text-center border-b border-amber-300" style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px` }}>
+                            <div className="flex items-center justify-center mb-1" style={{ gap: `${padding * 0.4}px` }}>
+                                <img src="/logo.png" alt="Logo" className="object-contain" style={{ height: `${headerLogoSize}px`, width: `${headerLogoSize}px`, flexShrink: 0 }} onError={(e) => e.target.style.display = 'none'} />
+                                <h1 className={`font-bold ${designStyle.headerText}`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h1>
+                            </div>
+                            <p className={`${designStyle.subText} font-medium`} style={{ fontSize: `${subtitleSize}px` }}>Hajj & Umrah Management</p>
                         </div>
-                    )}
-                </div>
+
+                        <div className="flex-1 flex items-center" style={{ gap: `${padding}px` }}>
+                            <div className="flex-shrink-0">
+                                <Avatar className={`border-4 ${designStyle.avatarBorder} shadow-xl`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px` }}>
+                                    <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                                    <AvatarFallback className={`${designStyle.avatarBg} ${designStyle.avatarText} font-bold`} style={{ fontSize: `${Math.max(20, nameSize * 1.8)}px` }}>
+                                        {getInitials(user?.firstName, user?.lastName)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                                <h2 className="font-extrabold text-gray-900 truncate" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
+                                <p className="text-gray-700 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px` }}>{user?.fullNameBn}</p>
+                                <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${infoSize}px` }}>
+                                    <p className="truncate"><span className="font-semibold">Passport:</span> {passport?.passportNumber}</p>
+                                    <p className="truncate"><span className="font-semibold">NID:</span> {user?.nid}</p>
+                                    <p className="truncate"><span className="font-semibold">DOB:</span> {user?.dateOfBirth}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-amber-300 flex items-center justify-between" style={{ paddingTop: `${padding * 0.6}px`, marginTop: `${padding * 0.6}px` }}>
+                            <img src="/kaaba2.png" alt="Makkah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                            <img src="/madinah2.png" alt="Madinah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                        </div>
+                    </div>
+                )}
             </div>
         )
     }
@@ -231,56 +215,71 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                 style={{
                     width: cardWidth,
                     height: cardHeight,
-                    borderRadius: '12px',
+                    borderRadius: `${Math.max(12, 12 * scaleFactor)}px`,
                 }}
             >
                 {/* Angular accent shapes */}
                 <div className="absolute top-0 left-0 w-1/2 h-1/3 bg-linear-to-br from-blue-500/20 to-transparent" style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}></div>
                 <div className="absolute bottom-0 right-0 w-1/2 h-1/3 bg-linear-to-tl from-cyan-500/20 to-transparent" style={{ clipPath: 'polygon(100% 100%, 0 100%, 100% 0)' }}></div>
 
-                <div className="relative h-full flex flex-col p-3">
-                    <div className={`flex items-center gap-2 pb-2 mb-2 border-b-2 ${designStyle.headerBorder}`}>
-                        <div className="w-8 h-8 bg-yellow-500/20 rounded-md flex items-center justify-center border border-yellow-500">
-                            <img src="/logo.png" alt="Logo" className="h-5 w-5 object-contain" onError={(e) => e.target.style.display = 'none'} />
+                <div className="relative h-full flex flex-col" style={{ padding: `${padding}px` }}>
+                    <div className={`flex items-center justify-center border-b-2 ${designStyle.headerBorder}`} style={{ paddingBottom: `${padding * 0.6}px`, marginBottom: `${padding * 0.6}px`, gap: `${padding * 0.5}px` }}>
+                        <div className="bg-yellow-500/20 rounded-md flex items-center justify-center border border-yellow-500" style={{ width: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, height: `${clampSize(Math.round(28 * scaleFactor), 26, 30)}px`, flexShrink: 0 }}>
+                            <img src="/logo.png" alt="Logo" className="object-contain" style={{ height: `${clampSize(Math.round(18 * scaleFactor), 16, 20)}px`, width: `${clampSize(Math.round(18 * scaleFactor), 16, 20)}px` }} onError={(e) => e.target.style.display = 'none'} />
                         </div>
                         <div>
-                            <h1 className={`text-xs font-bold ${designStyle.headerText} uppercase tracking-wide`}>{companyInfo.name || 'M/S Raj Travel'}</h1>
-                            <p className={`text-[7px] ${designStyle.subText}`}>Hajj & Umrah Services</p>
+                            <h1 className={`font-bold ${designStyle.headerText} uppercase tracking-wide`} style={{ fontSize: `${titleSize}px` }}>{companyInfo.name || 'M/S Raj Travel'}</h1>
+                            <p className={designStyle.subText} style={{ fontSize: `${subtitleSize}px` }}>Hajj License: {companyInfo.hajjLicense}</p>
                         </div>
                     </div>
 
-                    <div className="flex-1 flex items-center gap-3">
-                        <Avatar className={`h-20 w-20 border-2 ${designStyle.avatarBorder} shadow-lg flex-shrink-0`}>
-                            <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                            <AvatarFallback className="bg-slate-600 text-cyan-300 font-bold text-xl">
-                                {getInitials(user?.firstName, user?.lastName)}
-                            </AvatarFallback>
-                        </Avatar>
+                    {isPortrait ? (
+                        // Portrait Layout - Avatar on top, info below
+                        <div className="flex-1 flex flex-col items-center justify-center text-center">
+                            <Avatar className={`border-4 ${designStyle.avatarBorder} shadow-lg`} style={{ height: `${Math.max(96, avatarSize * 1.2)}px`, width: `${Math.max(96, avatarSize * 1.2)}px`, marginBottom: `${padding * 0.6}px` }}>
+                                <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                                <AvatarFallback className="bg-slate-600 text-cyan-300 font-bold" style={{ fontSize: `${Math.max(24, nameSize * 2)}px` }}>
+                                    {getInitials(user?.firstName, user?.lastName)}
+                                </AvatarFallback>
+                            </Avatar>
 
-                        <div className="flex-1 min-w-0">
-                            <h2 className="text-[11px] font-bold text-white">{user?.fullName}</h2>
-                            <p className="text-[9px] text-gray-300 mb-1.5">{user?.fullNameBn}</p>
-                            <div className="space-y-0.5 text-[7px] text-gray-300">
-                                <p className="truncate"><span className="text-cyan-400">ID:</span> {passport?.passport_number}</p>
-                                <p className="truncate"><span className="text-cyan-400">Phone:</span> {user?.phone}</p>
-                                <p className="truncate"><span className="text-cyan-400">NID:</span> {user?.nid}</p>
+                            <h2 className="font-bold text-white" style={{ fontSize: `${Math.max(12, nameSize + 1)}px` }}>{user?.fullName}</h2>
+                            <p className="text-gray-300" style={{ fontSize: `${Math.max(10, nameSize - 1)}px`, marginBottom: `${padding * 0.6}px` }}>{user?.fullNameBn}</p>
+
+                            <div className="grid grid-cols-2 text-gray-300" style={{ gap: `${padding * 0.3}px ${padding * 0.6}px`, fontSize: `${subtitleSize}px`, paddingLeft: `${padding * 0.8}px`, paddingRight: `${padding * 0.8}px` }}>
+                                <div className="text-right font-medium text-cyan-400">Passport:</div>
+                                <div className="text-left">{passport?.passportNumber}</div>
+                                <div className="text-right font-medium text-cyan-400">NID:</div>
+                                <div className="text-left">{user?.nid}</div>
+                                <div className="text-right font-medium text-cyan-400">DOB:</div>
+                                <div className="text-left">{user?.dateOfBirth}</div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        // Landscape Layout - Side by side
+                        <div className="flex-1 flex items-center" style={{ gap: `${padding}px` }}>
+                            <Avatar className={`border-2 ${designStyle.avatarBorder} shadow-lg flex-shrink-0`} style={{ height: `${avatarSize}px`, width: `${avatarSize}px` }}>
+                                <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                                <AvatarFallback className="bg-slate-600 text-cyan-300 font-bold" style={{ fontSize: `${Math.max(20, nameSize * 1.8)}px` }}>
+                                    {getInitials(user?.firstName, user?.lastName)}
+                                </AvatarFallback>
+                            </Avatar>
 
-                    {packageInfo && (
-                        <div className={`${designStyle.footerBg} rounded px-2 py-1.5 mt-2`}>
-                            <p className={`text-[8px] font-bold ${designStyle.footerText}`}>{packageInfo.name}</p>
+                            <div className="flex-1 min-w-0">
+                                <h2 className="font-bold text-white" style={{ fontSize: `${nameSize}px` }}>{user?.fullName}</h2>
+                                <p className="text-gray-300 truncate" style={{ fontSize: `${Math.max(9, nameSize - 2)}px`, marginBottom: `${padding * 0.4}px` }}>{user?.fullNameBn}</p>
+                                <div className="text-gray-300" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.2}px`, fontSize: `${textSize}px` }}>
+                                    <p className="truncate"><span className="text-cyan-400">Passport:</span> {passport?.passportNumber}</p>
+                                    <p className="truncate"><span className="text-cyan-400">NID:</span> {user?.nid}</p>
+                                    <p className="truncate"><span className="text-cyan-400">DOB:</span> {user?.dateOfBirth}</p>
+                                </div>
+                            </div>
                         </div>
                     )}
 
-                    {/* Barcode simulation */}
-                    <div className="mt-2 flex justify-center">
-                        <div className="flex gap-[1px] h-8">
-                            {[3,2,4,2,3,4,2,3,2,4,3,2,4,2,3,4,2,3].map((h, i) => (
-                                <div key={i} className="bg-white w-[2px]" style={{ height: `${h * 2}px` }}></div>
-                            ))}
-                        </div>
+                    <div className="flex items-center justify-between" style={{ marginTop: `${padding}px`, paddingTop: `${padding * 0.6}px`, borderTop: '1px solid rgba(255, 255, 255, 0.3)' }}>
+                        <img src="/kaaba3.png" alt="Makkah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
+                        <img src="/madinah4.png" alt="Madinah" style={{ height: `${headerIconSize}px`, width: `${headerIconSize}px` }} className="object-contain" onError={(e) => e.target.style.display = 'none'} />
                     </div>
                 </div>
             </div>
