@@ -30,6 +30,8 @@
                 "transactions": "Transactions"
             }
         },
+        "default": "Default",
+        "setAsDefault": "Set as Default",
         "welcome": "Welcome back to Accounts",
         "dashboard": "Dashboard",
         "home": "Home",
@@ -121,6 +123,7 @@
         "startDateRequired": "Start date is required",
         "endDateRequired": "End date is required",
         "active": "Active",
+        "inactive": "Inactive",
         "addNew": "Add New",
         "delete": "Delete",
         "create": "Create",

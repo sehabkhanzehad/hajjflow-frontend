@@ -4,22 +4,27 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import api from '@/lib/api'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Calendar, CalendarPlus, Edit } from 'lucide-react'
+import { Calendar, CalendarPlus, EllipsisVertical } from 'lucide-react'
+import { useI18n } from "@/contexts/I18nContext"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function YearsSettings() {
-    const { t } = useTranslation()
+    const { t, language } = useI18n()
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [editingYear, setEditingYear] = useState(null)
     const [yearName, setYearName] = useState('')
     const [startDate, setStartDate] = useState('')
     const [endDate, setEndDate] = useState('')
-    const [status, setStatus] = useState(true)
     const queryClient = useQueryClient()
 
     const { data: years, isLoading } = useQuery({
@@ -40,7 +45,6 @@ export default function YearsSettings() {
             setYearName('')
             setStartDate('')
             setEndDate('')
-            setStatus(true)
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || t('app.createFailed'))
@@ -57,7 +61,17 @@ export default function YearsSettings() {
             setYearName('')
             setStartDate('')
             setEndDate('')
-            setStatus(true)
+        },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || t('app.updateFailed'))
+        },
+    })
+
+    const setDefaultMutation = useMutation({
+        mutationFn: async (id) => await api.put(`/years/${id}/default`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['years'] })
+            toast.success("Default year updated successfully!")
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || t('app.updateFailed'))
@@ -86,7 +100,7 @@ export default function YearsSettings() {
         }
 
         if (editingYear) {
-            updateMutation.mutate({ id: editingYear.id, data: { ...data, status } })
+            updateMutation.mutate({ id: editingYear.id, data })
         } else {
             createMutation.mutate(data)
         }
@@ -108,7 +122,6 @@ export default function YearsSettings() {
 
         setStartDate(formatDateForInput(year.attributes.startDate))
         setEndDate(formatDateForInput(year.attributes.endDate))
-        setStatus(year.attributes.status ?? true)
         setIsDialogOpen(true)
     }
 
@@ -117,8 +130,11 @@ export default function YearsSettings() {
         setYearName('')
         setStartDate('')
         setEndDate('')
-        setStatus(true)
         setIsDialogOpen(true)
+    }
+
+    const handleSetDefault = (year) => {
+        setDefaultMutation.mutate(year.id)
     }
 
     if (isLoading) return (
@@ -204,20 +220,6 @@ export default function YearsSettings() {
                                         required
                                     />
                                 </div>
-                                {editingYear && (
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            id="status"
-                                            type="checkbox"
-                                            checked={status}
-                                            onChange={(e) => setStatus(e.target.checked)}
-                                            className="w-4 h-4 rounded border-border"
-                                        />
-                                        <Label htmlFor="status" className="cursor-pointer">
-                                            {t('app.active')}
-                                        </Label>
-                                    </div>
-                                )}
                                 <div className="flex justify-end space-x-3">
                                     <Button
                                         type="button"
@@ -262,7 +264,7 @@ export default function YearsSettings() {
                                     <TableHead>{t('app.yearName')}</TableHead>
                                     <TableHead>{t('app.startDate')}</TableHead>
                                     <TableHead>{t('app.endDate')}</TableHead>
-                                    <TableHead>{t('app.status')}</TableHead>
+                                    <TableHead>{t('app.default')}</TableHead>
                                     <TableHead className="text-right">{t('app.actions')}</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -279,21 +281,30 @@ export default function YearsSettings() {
                                             {year.attributes.endDate ? new Date(year.attributes.endDate).toLocaleDateString() : '-'}
                                         </TableCell>
                                         <TableCell>
-                                            {year.attributes.status ? (
-                                                <Badge variant="default">{t('app.active')}</Badge>
+                                            {year.attributes.default ? (
+                                                <Badge variant="default">Yes</Badge>
                                             ) : (
-                                                <Badge variant="secondary">{t('app.inactive')}</Badge>
+                                                <Badge variant="secondary">No</Badge>
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => handleEdit(year)}
-                                            >
-                                                <Edit className="w-4 h-4 mr-1" />
-                                                {t('app.edit')}
-                                            </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <button className="data-[state=open]:bg-accent bg-background hover:bg-accent ml-auto cursor-pointer rounded-md border p-1">
+                                                        <EllipsisVertical size={15} />
+                                                    </button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => handleEdit(year)}>
+                                                        {t('app.edit')}
+                                                    </DropdownMenuItem>
+                                                    {!year.attributes.default && (
+                                                        <DropdownMenuItem onClick={() => handleSetDefault(year)}>
+                                                            {t('app.setAsDefault')}
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
                                 ))}
