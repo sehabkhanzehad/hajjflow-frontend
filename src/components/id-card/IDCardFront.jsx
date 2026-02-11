@@ -97,7 +97,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
 
                                 <div className="text-gray-700 w-full" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px`, paddingLeft: `${padding * 0.5}px`, paddingRight: `${padding * 0.5}px` }}>
                                     <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>PASSPORT NO</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{passport?.passportNumber}</span></div>
-                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>FATHER'S NAME</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.fatherName}</span></div>
+                                    <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>FATHER'S NAME</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span>{user?.fatherName}</span></div>
                                     <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>NID/BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.nid}</span></div>
                                     <div style={{ display: 'flex', fontSize: `${infoSize}px` }}><span className="font-medium" style={{ minWidth: '90px', flexShrink: 0 }}>DATE OF BIRTH</span><span style={{ flexShrink: 0, marginRight: '4px' }}>:</span><span className="truncate">{user?.dateOfBirth}</span></div>
                                 </div>
@@ -131,7 +131,7 @@ export function IDCardFront({ pilgrim, packageInfo, size, orientation = 'landsca
                                     <div className="text-gray-700" style={{ display: 'flex', flexDirection: 'column', gap: `${padding * 0.15}px` }}>
                                         <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NAME</span>: {user?.fullName}</p>
                                         <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>PASSPORT NO</span>: {passport?.passportNumber}</p>
-                                        <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>FATHER'S NAME</span>: {user?.fatherName}</p>
+                                        <p style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>FATHER'S NAME</span>: {user?.fatherName}</p>
                                         <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>NID/BIRTH REG NO</span>: {user?.nid}</p>
                                         <p className="truncate" style={{ fontSize: `${infoSize}px` }}><span className="font-medium" style={{ display: 'inline-block', width: '85px' }}>DATE OF BIRTH</span>: {user?.dateOfBirth}</p>
                                     </div>
